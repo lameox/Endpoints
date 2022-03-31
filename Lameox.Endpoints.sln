@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lameox.Endpoints", "src\Lameox.Endpoints\Lameox.Endpoints.csproj", "{7B9BFB3D-CE78-4C8D-B888-D8BC19DC2CC8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lameox.Endpoints.Tests.Server", "src\Lameox.Endpoints.Tests.Server\Lameox.Endpoints.Tests.Server.csproj", "{AC3EB0B4-8F8A-473F-87E7-02FF50C351F7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lameox.Endpoints.Tests", "src\Lameox.Endpoints.Tests\Lameox.Endpoints.Tests.csproj", "{1A11D313-301A-4578-A347-6FF8AB68AAA8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "engineering", "engineering", "{CDBC0310-195B-42AB-956F-93EC35A38CD5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "props", "props", "{5114A784-1AAB-41D1-90E9-2938DA8FBF64}"
+	ProjectSection(SolutionItems) = preProject
+		eng\props\Common.props = eng\props\Common.props
+		eng\props\ShippingAssemblyInfos.props = eng\props\ShippingAssemblyInfos.props
+		eng\props\ShippingProject.props = eng\props\ShippingProject.props
+		eng\props\TestProject.props = eng\props\TestProject.props
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B9BFB3D-CE78-4C8D-B888-D8BC19DC2CC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B9BFB3D-CE78-4C8D-B888-D8BC19DC2CC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B9BFB3D-CE78-4C8D-B888-D8BC19DC2CC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B9BFB3D-CE78-4C8D-B888-D8BC19DC2CC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC3EB0B4-8F8A-473F-87E7-02FF50C351F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC3EB0B4-8F8A-473F-87E7-02FF50C351F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC3EB0B4-8F8A-473F-87E7-02FF50C351F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC3EB0B4-8F8A-473F-87E7-02FF50C351F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A11D313-301A-4578-A347-6FF8AB68AAA8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A11D313-301A-4578-A347-6FF8AB68AAA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A11D313-301A-4578-A347-6FF8AB68AAA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A11D313-301A-4578-A347-6FF8AB68AAA8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5114A784-1AAB-41D1-90E9-2938DA8FBF64} = {CDBC0310-195B-42AB-956F-93EC35A38CD5}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4F4C8FE2-5541-42EE-A473-B02CF6CABE5A}
+	EndGlobalSection
+EndGlobal
