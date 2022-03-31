@@ -1,5 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <Import Project="..\..\eng\props\Common.props" />
+
+    <ItemGroup>
+      <ProjectReference Include="..\Lameox.Endpoints\Lameox.Endpoints.csproj" />
+    </ItemGroup>
     
 </Project>
