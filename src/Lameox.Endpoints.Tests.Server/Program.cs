@@ -1,12 +1,11 @@
 ﻿using Lameox.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddEndpoints();
+builder.Services.AddSimpleEndpoints();
 
 var app = builder.Build();
-app.UseEndpoints();
+app.UseSimpleEndpoints();
 
-
-app.MapGet("/", () => "Hello World!");
+app.MapSimpleEndpoints();
 
 app.Run();
