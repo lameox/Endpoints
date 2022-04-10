@@ -2,9 +2,9 @@
 {
     public partial class EndpointDescription
     {
-        internal static EndpointDescription Create(Type endpointType, string pattern, HttpVerb verbs, bool implementsHandleAsync, bool implementsGetResponseAsync)
+        internal static EndpointDescription Create(Type endpointType, string pattern, HttpVerb verbs)
         {
-            return new EndpointDescription(endpointType, pattern, verbs, implementsHandleAsync, implementsGetResponseAsync);
+            return new EndpointDescription(endpointType, pattern, verbs);
         }
     }
 }

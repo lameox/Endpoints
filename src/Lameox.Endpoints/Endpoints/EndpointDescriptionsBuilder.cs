@@ -103,15 +103,7 @@ namespace Lameox.Endpoints
             _ = configuration;
             _ = route;
 
-            var implementsHandleAsync =
-                Endpoint<object, object>.IsHandleAsyncOverridden(endpointType) ||
-                Endpoint<object>.IsHandleAsyncOverridden(endpointType);
-
-            var implementsGetResponseAsync =
-                Endpoint<object, object>.IsGetResponseAsyncOverridden(endpointType) ||
-                Endpoint<object>.IsGetResponseAsyncOverridden(endpointType);
-
-            return EndpointDescription.Create(endpointType, route, configuration.Verbs, implementsHandleAsync, implementsGetResponseAsync);
+            return EndpointDescription.Create(endpointType, route, configuration.Verbs);
         }
     }
 }
