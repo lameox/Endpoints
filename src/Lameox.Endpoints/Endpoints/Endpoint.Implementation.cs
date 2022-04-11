@@ -61,7 +61,7 @@ namespace Lameox.Endpoints
                     throw ExceptionUtilities.Unreachable();
                 }
 
-                var request = GetRequestObjectFromRequest(requestContext, endpointDescription);
+                var request = await GetRequestObjectFromRequestAsync(requestContext, endpointDescription, cancellationToken);
 
                 if (_handleAsync is not null)
                 {
@@ -75,17 +75,36 @@ namespace Lameox.Endpoints
                 await SendResponseIfNoneSentYetAsync(requestContext, cancellationToken);
             }
 
-            private static TRequest GetRequestObjectFromRequest(HttpContext requestContext, EndpointDescription endpointDescription)
+            private static async ValueTask<TRequest> GetRequestObjectFromRequestAsync(HttpContext requestContext, EndpointDescription endpointDescription, CancellationToken cancellationToken)
             {
                 if (typeof(TRequest) == typeof(NoRequest))
                 {
                     return (TRequest)(object)default(NoRequest);
                 }
 
-                _ = requestContext;
-                _ = endpointDescription;
+                if (typeof(TRequest) == typeof(PlainTextRequest))
+                {
+                    using var streamReader = new StreamReader(requestContext.Request.Body);
+                    var bodyText = await streamReader.ReadToEndAsync();
+                    return (TRequest)(object)new PlainTextRequest { Text = bodyText };
+                }
 
-                throw new NotImplementedException();
+                return await DeserializeAndBindRequestAsync(requestContext, endpointDescription, cancellationToken);
+            }
+
+            private static async ValueTask<TRequest> DeserializeAndBindRequestAsync(HttpContext requestContext, EndpointDescription endpointDescription, CancellationToken cancellationToken)
+            {
+                var request = await requestContext.Request.GetRequestObjectAsync<TRequest>(cancellationToken: cancellationToken);
+
+                if (request is null)
+                {
+                    throw ExceptionUtilities.UnableToDeserializeRequest();
+                }
+
+                _ = endpointDescription;
+                //TODO
+
+                return request;
             }
 
             private void SetResponse(TResponse? response)

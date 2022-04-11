@@ -22,5 +22,10 @@ namespace Lameox.Endpoints
         {
             return new InvalidOperationException("You must override one of the request handling methods of the endpoint.");
         }
+
+        internal static Exception UnableToDeserializeRequest()
+        {
+            throw new InvalidOperationException("Failed to deserialize the request object.");
+        }
     }
 }
