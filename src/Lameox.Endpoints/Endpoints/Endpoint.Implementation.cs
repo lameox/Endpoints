@@ -109,6 +109,12 @@ namespace Lameox.Endpoints
                     return;
                 }
 
+                if (typeof(TResponse) == typeof(string))
+                {
+                    await requestContext.Response.SendTextResponseAsync((string)(object)response, cancellationToken: cancellationToken);
+                    return;
+                }
+
                 await requestContext.Response.SendJsonResponseAsync(response, cancellationToken: cancellationToken);
             }
         }
