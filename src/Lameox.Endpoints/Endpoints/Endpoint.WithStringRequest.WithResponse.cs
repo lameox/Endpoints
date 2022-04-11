@@ -71,12 +71,12 @@ namespace Lameox.Endpoints
 
                 protected virtual ValueTask HandleAsync(string request, CancellationToken cancellationToken)
                 {
-                    throw ExceptionUtilities.BadOverrideInEndpoint();
+                    throw ExceptionUtilities.DontCallBaseMethodsInHandlers(GetType());
                 }
 
                 protected virtual ValueTask<TResponse> GetResponseAsync(string request, CancellationToken cancellationToken)
                 {
-                    throw ExceptionUtilities.BadOverrideInEndpoint();
+                    throw ExceptionUtilities.DontCallBaseMethodsInHandlers(GetType());
                 }
             }
         }

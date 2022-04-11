@@ -18,9 +18,14 @@ namespace Lameox.Endpoints
             throw new NotImplementedException();
         }
 
-        internal static Exception BadOverrideInEndpoint()
+        internal static Exception DontCallBaseMethodsInHandlers(Type endpointType)
         {
-            return new InvalidOperationException("You must override one of the request handling methods of the endpoint.");
+            return new InvalidOperationException($"Bad Endpoint {endpointType.FullName}: Don't call base methods in your overrides of the request handling methods.");
+        }
+
+        internal static Exception BadOverridesInEndpoint(Type endpointType)
+        {
+            return new InvalidOperationException($"Bad Endpoint {endpointType.FullName}: You must override exactly one of the request handling methods of the endpoint.");
         }
 
         internal static Exception UnableToDeserializeRequest()

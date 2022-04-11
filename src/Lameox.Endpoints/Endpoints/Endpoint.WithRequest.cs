@@ -52,7 +52,7 @@ namespace Lameox.Endpoints
 
             protected virtual ValueTask HandleAsync(TRequest request, CancellationToken cancellationToken)
             {
-                throw ExceptionUtilities.BadOverrideInEndpoint();
+                throw ExceptionUtilities.DontCallBaseMethodsInHandlers(GetType());
             }
         }
     }

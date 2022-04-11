@@ -33,12 +33,12 @@ namespace Lameox.Endpoints
 
             if (implementsHandleAsync && implementsGetResponseAsync)
             {
-                throw ExceptionUtilities.BadOverrideInEndpoint();
+                throw ExceptionUtilities.BadOverridesInEndpoint(endpointType);
             }
 
             if (!implementsHandleAsync && !implementsGetResponseAsync)
             {
-                throw ExceptionUtilities.BadOverrideInEndpoint();
+                throw ExceptionUtilities.BadOverridesInEndpoint(endpointType);
             }
 
             useHandleAsyncInImplementation = implementsHandleAsync;

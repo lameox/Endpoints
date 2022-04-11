@@ -69,12 +69,12 @@ namespace Lameox.Endpoints
 
             protected virtual ValueTask HandleAsync(CancellationToken cancellationToken)
             {
-                throw ExceptionUtilities.BadOverrideInEndpoint();
+                throw ExceptionUtilities.DontCallBaseMethodsInHandlers(GetType());
             }
 
             protected virtual ValueTask<TResponse> GetResponseAsync(CancellationToken cancellationToken)
             {
-                throw ExceptionUtilities.BadOverrideInEndpoint();
+                throw ExceptionUtilities.DontCallBaseMethodsInHandlers(GetType());
             }
         }
     }
