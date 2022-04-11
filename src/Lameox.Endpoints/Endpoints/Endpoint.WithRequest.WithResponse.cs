@@ -11,9 +11,7 @@ namespace Lameox.Endpoints
     public abstract partial class Endpoint
     {
         public abstract partial class WithRequest<TRequest>
-            where TRequest : notnull, new()
         {
-
             public abstract class WithResponse<TResponse> : IEndpoint
                 where TResponse : notnull
             {
