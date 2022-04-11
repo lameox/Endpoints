@@ -47,10 +47,10 @@ namespace Lameox.Endpoints
 
             private ValueTask CallableHandleAsync(TRequest request, CancellationToken cancellationToken)
             {
-                return HandleAsync(cancellationToken);
+                return HandleAsync(request, cancellationToken);
             }
 
-            protected virtual ValueTask HandleAsync(CancellationToken cancellationToken)
+            protected virtual ValueTask HandleAsync(TRequest request, CancellationToken cancellationToken)
             {
                 throw ExceptionUtilities.BadOverrideInEndpoint();
             }

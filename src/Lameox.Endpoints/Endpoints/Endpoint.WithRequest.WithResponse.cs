@@ -63,20 +63,20 @@ namespace Lameox.Endpoints
 
                 private ValueTask CallableHandleAsync(TRequest request, CancellationToken cancellationToken)
                 {
-                    return HandleAsync(cancellationToken);
+                    return HandleAsync(request, cancellationToken);
                 }
 
                 private ValueTask<TResponse> CallableGetResponseAsync(TRequest request, CancellationToken cancellationToken)
                 {
-                    return GetResponseAsync(cancellationToken);
+                    return GetResponseAsync(request, cancellationToken);
                 }
 
-                protected virtual ValueTask HandleAsync(CancellationToken cancellationToken)
+                protected virtual ValueTask HandleAsync(TRequest request, CancellationToken cancellationToken)
                 {
                     throw ExceptionUtilities.BadOverrideInEndpoint();
                 }
 
-                protected virtual ValueTask<TResponse> GetResponseAsync(CancellationToken cancellationToken)
+                protected virtual ValueTask<TResponse> GetResponseAsync(TRequest request, CancellationToken cancellationToken)
                 {
                     throw ExceptionUtilities.BadOverrideInEndpoint();
                 }
