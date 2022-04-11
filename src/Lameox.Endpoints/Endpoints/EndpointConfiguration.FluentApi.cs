@@ -15,7 +15,7 @@ namespace Lameox.Endpoints
             return this;
         }
 
-        public EndpointConfiguration WithRoute(string route)
+        public EndpointConfiguration WithRoutes(string route)
         {
             return WithRoutes(ImmutableArray.Create(route));
         }

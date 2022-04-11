@@ -5,7 +5,7 @@
         protected override EndpointConfiguration Configure(EndpointConfiguration configuration)
         {
             return configuration
-                .WithRoute("/")
+                .WithRoutes("/")
                 .WithVerbs(HttpVerb.Get);
         }
 

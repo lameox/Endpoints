@@ -5,7 +5,7 @@
         protected override EndpointConfiguration Configure(EndpointConfiguration configuration)
         {
             return configuration
-                .WithRoute("/echo")
+                .WithRoutes("/echo")
                 .WithVerbs(HttpVerb.Post);
         }
 
