@@ -49,24 +49,17 @@ namespace Lameox.Endpoints
                     {
                         _implementation = new Implementation<TRequest, TResponse>(
                             Configure,
-                            GetRequestObjectFromRequest,
                             CallableHandleAsync);
                     }
                     else
                     {
                         _implementation = new Implementation<TRequest, TResponse>(
                             Configure,
-                            GetRequestObjectFromRequest,
                             CallableGetResponseAsync);
                     }
                 }
 
-                protected abstract EndpointConfiguration Configure(EndpointConfiguration arg);
-
-                private static TRequest GetRequestObjectFromRequest(HttpContext requestContext, EndpointDescription endpointDescription)
-                {
-                    throw new NotImplementedException();
-                }
+                protected abstract EndpointConfiguration Configure(EndpointConfiguration configuration);
 
                 private ValueTask CallableHandleAsync(TRequest request, CancellationToken cancellationToken)
                 {

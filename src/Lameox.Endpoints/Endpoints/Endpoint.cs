@@ -37,17 +37,11 @@ namespace Lameox.Endpoints
 
             _implementation = new Implementation<NoRequest, NoResponse>(
                 Configure,
-                GetRequestObjectFromRequest,
                 CallableHandleAsync);
         }
 
-        protected abstract EndpointConfiguration Configure(EndpointConfiguration arg);
+        protected abstract EndpointConfiguration Configure(EndpointConfiguration configuration);
         protected abstract ValueTask HandleAsync(CancellationToken cancellationToken);
-
-        private static NoRequest GetRequestObjectFromRequest(HttpContext requestContext, EndpointDescription endpointDescription)
-        {
-            return default;
-        }
 
         private ValueTask CallableHandleAsync(NoRequest request, CancellationToken cancellationToken)
         {

@@ -14,7 +14,6 @@ namespace Lameox.Endpoints
             where TRequest : notnull, new()
             where TResponse : notnull
         {
-            private readonly Func<HttpContext, EndpointDescription, TRequest> _getRequestObjectFromRequest;
             private readonly Func<TRequest, CancellationToken, ValueTask>? _handleAsync;
             private readonly Func<TRequest, CancellationToken, ValueTask<TResponse>>? _getResponseAsync;
             private readonly Func<EndpointConfiguration, EndpointConfiguration> _configure;
@@ -25,20 +24,16 @@ namespace Lameox.Endpoints
 
             public Implementation(
                 Func<EndpointConfiguration, EndpointConfiguration> configure,
-                Func<HttpContext, EndpointDescription, TRequest> getRequestObjectFromRequest,
                 Func<TRequest, CancellationToken, ValueTask> handleAsync)
             {
-                _getRequestObjectFromRequest = getRequestObjectFromRequest;
                 _handleAsync = handleAsync;
                 _configure = configure;
             }
 
             public Implementation(
                 Func<EndpointConfiguration, EndpointConfiguration> configure,
-                Func<HttpContext, EndpointDescription, TRequest> getRequestObjectFromRequest,
                 Func<TRequest, CancellationToken, ValueTask<TResponse>> getResponseAsync)
             {
-                _getRequestObjectFromRequest = getRequestObjectFromRequest;
                 _getResponseAsync = getResponseAsync;
                 _configure = configure;
             }
@@ -66,7 +61,7 @@ namespace Lameox.Endpoints
                     throw ExceptionUtilities.Unreachable();
                 }
 
-                var request = _getRequestObjectFromRequest(requestContext, endpointDescription);
+                var request = GetRequestObjectFromRequest(requestContext, endpointDescription);
 
                 if (_handleAsync is not null)
                 {
@@ -78,6 +73,19 @@ namespace Lameox.Endpoints
                 SetResponse(response);
 
                 await SendResponseIfNoneSentYetAsync(requestContext, cancellationToken);
+            }
+
+            private static TRequest GetRequestObjectFromRequest(HttpContext requestContext, EndpointDescription endpointDescription)
+            {
+                if (typeof(TRequest) == typeof(NoRequest))
+                {
+                    return (TRequest)(object)default(NoRequest);
+                }
+
+                _ = requestContext;
+                _ = endpointDescription;
+
+                throw new NotImplementedException();
             }
 
             private void SetResponse(TResponse? response)
