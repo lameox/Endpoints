@@ -98,11 +98,15 @@ namespace Lameox.Endpoints
 
                 if (request is null)
                 {
-                    throw ExceptionUtilities.UnableToDeserializeRequest();
+                    throw ExceptionUtilities.UnableToDeserializeRequest(endpointDescription.EndpointType);
                 }
 
-                _ = endpointDescription;
-                //TODO
+                var failures = await Binder<TRequest>.BindRequestValuesAsync(ref request, requestContext, endpointDescription, cancellationToken);
+
+                if (failures.Any())
+                {
+                    throw ExceptionUtilities.BindingFailed(endpointDescription.EndpointType, failures);
+                }
 
                 return request;
             }

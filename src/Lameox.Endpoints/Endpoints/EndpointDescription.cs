@@ -4,10 +4,8 @@
     {
         internal Type EndpointType { get; }
 
-
         public string Pattern { get; }
         public HttpVerb Verbs { get; }
-
 
         private EndpointDescription(
             Type endpointType,

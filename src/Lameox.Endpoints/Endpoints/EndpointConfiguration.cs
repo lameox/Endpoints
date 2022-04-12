@@ -9,7 +9,7 @@ namespace Lameox.Endpoints
 {
     public sealed partial class EndpointConfiguration
     {
-        public int Version { get; private set; }
+        public int? Version { get; private set; }
         public ImmutableArray<string> Routes { get; private set; }
         public HttpVerb Verbs { get; private set; }
     }

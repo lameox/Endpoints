@@ -11,6 +11,11 @@ namespace Lameox.Endpoints
     {
         public EndpointConfiguration WithVersion(int version)
         {
+            if (version < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(version));
+            }
+
             Version = version;
             return this;
         }
