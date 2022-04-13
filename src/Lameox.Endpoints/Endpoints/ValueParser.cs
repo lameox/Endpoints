@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Lameox.Endpoints
 {
-    internal class ValueParser
+    internal static class ValueParser
     {
         public delegate bool TryParseValueDelegate(object? input, out object value);
+
+        private static ImmutableDictionary<Type, TryParseValueDelegate> Cache = ImmutableDictionary<Type, TryParseValueDelegate>.Empty;
 
         public static TryParseValueDelegate Get<TTargetType>()
         {
@@ -16,6 +19,11 @@ namespace Lameox.Endpoints
         }
 
         public static TryParseValueDelegate Get(Type targetType)
+        {
+            return ImmutableInterlocked.GetOrAdd(ref Cache, targetType, CreateValueParserForType);
+        }
+
+        private static TryParseValueDelegate CreateValueParserForType(Type targetType)
         {
             if (targetType == typeof(string))
             {
