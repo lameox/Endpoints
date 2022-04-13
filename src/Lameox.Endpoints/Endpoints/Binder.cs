@@ -21,16 +21,16 @@ namespace Lameox.Endpoints
 
         public static ValueTask<ImmutableArray<BindingFailure>> BindRequestValuesAsync(ref TRequest request, HttpContext requestContext)
         {
-            var failures = ImmutableArray.CreateBuilder<BindingFailure>();
+            var failures = new FailureCollection();
 
-            BindFormValues(ref request, requestContext, failures);
-            BindRouteValues(ref request, requestContext, failures);
-            BindQueryParameters(ref request, requestContext, failures);
+            BindFormValues(ref request, requestContext, ref failures);
+            BindRouteValues(ref request, requestContext, ref failures);
+            BindQueryParameters(ref request, requestContext, ref failures);
 
             return ValueTask.FromResult(failures.ToImmutable());
         }
 
-        private static void BindFormValues(ref TRequest request, HttpContext requestContext, ImmutableArray<BindingFailure>.Builder failures)
+        private static void BindFormValues(ref TRequest request, HttpContext requestContext, ref FailureCollection failures)
         {
             if (!requestContext.Request.HasFormContentType)
             {
@@ -39,7 +39,7 @@ namespace Lameox.Endpoints
 
             foreach (var formField in requestContext.Request.Form)
             {
-                Bind(ref request, formField.Key, formField.Value[0], failures);
+                Bind(ref request, formField.Key, formField.Value[0], ref failures);
             }
 
             foreach (var formFile in requestContext.Request.Form.Files)
@@ -56,7 +56,7 @@ namespace Lameox.Endpoints
             return;
         }
 
-        private static void BindRouteValues(ref TRequest request, HttpContext requestContext, ImmutableArray<BindingFailure>.Builder failures)
+        private static void BindRouteValues(ref TRequest request, HttpContext requestContext, ref FailureCollection failures)
         {
             if (!requestContext.Request.RouteValues.Any())
             {
@@ -65,13 +65,13 @@ namespace Lameox.Endpoints
 
             foreach (var routeValue in requestContext.Request.RouteValues)
             {
-                Bind(ref request, routeValue.Key, routeValue.Value, failures);
+                Bind(ref request, routeValue.Key, routeValue.Value, ref failures);
             }
 
             return;
         }
 
-        private static void BindQueryParameters(ref TRequest request, HttpContext requestContext, ImmutableArray<BindingFailure>.Builder failures)
+        private static void BindQueryParameters(ref TRequest request, HttpContext requestContext, ref FailureCollection failures)
         {
             if (!requestContext.Request.Query.Any())
             {
@@ -80,13 +80,13 @@ namespace Lameox.Endpoints
 
             foreach (var queryParameter in requestContext.Request.Query)
             {
-                Bind(ref request, queryParameter.Key, queryParameter.Value[0], failures);
+                Bind(ref request, queryParameter.Key, queryParameter.Value[0], ref failures);
             }
 
             return;
         }
 
-        private static void Bind(ref TRequest request, string key, object? value, ImmutableArray<BindingFailure>.Builder failures)
+        private static void Bind(ref TRequest request, string key, object? value, ref FailureCollection failures)
         {
             if (!_propertySetters.TryGetValue(key, out var propertySetter) || !propertySetter.CanParseValues)
             {
