@@ -12,14 +12,24 @@ namespace Lameox.Endpoints
         public Type PropertyType { get; }
         public object? Value { get; }
 
-        public string DisplayString =>
-            $"Could not bind property {PropertyName} with type {PropertyType.FullName} to value {Value?.ToString()}.";
+        private readonly string? _message;
+        public string Message => _message ?? $"Could not bind property {PropertyName} with type {PropertyType.FullName} to value {Value?.ToString()}.";
+
 
         internal BindingFailure(Type propertyType, string propertyName, object? value)
         {
             PropertyType = propertyType;
             PropertyName = propertyName;
             Value = value;
+        }
+
+        internal BindingFailure(Type propertyType, string propertyName, object? value, string message)
+        {
+            PropertyType = propertyType;
+            PropertyName = propertyName;
+            Value = value;
+
+            _message = message;
         }
 
         internal BindingFailure(Type propertyType, KeyValuePair<string, object?> keyValuePair) : this(propertyType, keyValuePair.Key, keyValuePair.Value)

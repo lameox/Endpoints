@@ -37,7 +37,7 @@ namespace Lameox.Endpoints
         internal static Exception BindingFailed(Type endpointType, ImmutableArray<BindingFailure> failures)
         {
             throw new InvalidOperationException($"Failed to bind request values for endpoint {endpointType.FullName}:{Environment.NewLine}" +
-                                                $"{string.Join(Environment.NewLine, failures.Select((f, i) => $"({i}): {f.DisplayString}"))}");
+                                                $"{string.Join(Environment.NewLine, failures.Select((f, i) => $"({i}): {f.Message}"))}");
         }
     }
 }
