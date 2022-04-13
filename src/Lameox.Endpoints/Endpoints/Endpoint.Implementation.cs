@@ -61,7 +61,12 @@ namespace Lameox.Endpoints
                     throw ExceptionUtilities.Unreachable();
                 }
 
-                var request = await GetRequestObjectFromRequestAsync(requestContext, endpointDescription, cancellationToken);
+                var (hadErrors, request) = await GetRequestObjectFromRequestAsync(requestContext, endpointDescription, cancellationToken);
+
+                if (hadErrors)
+                {
+                    return;
+                }
 
                 if (_handleAsync is not null)
                 {
@@ -75,40 +80,59 @@ namespace Lameox.Endpoints
                 await SendResponseIfNoneSentYetAsync(requestContext, cancellationToken);
             }
 
-            private static async ValueTask<TRequest> GetRequestObjectFromRequestAsync(HttpContext requestContext, EndpointDescription endpointDescription, CancellationToken cancellationToken)
+            private static async ValueTask<(bool hadErrors, TRequest request)> GetRequestObjectFromRequestAsync(HttpContext requestContext, EndpointDescription endpointDescription, CancellationToken cancellationToken)
             {
                 if (typeof(TRequest) == typeof(NoRequest))
                 {
-                    return (TRequest)(object)default(NoRequest);
+                    return (false, (TRequest)(object)default(NoRequest));
                 }
 
                 if (typeof(TRequest) == typeof(PlainTextRequest))
                 {
                     using var streamReader = new StreamReader(requestContext.Request.Body);
                     var bodyText = await streamReader.ReadToEndAsync();
-                    return (TRequest)(object)new PlainTextRequest { Text = bodyText };
+                    return (false, (TRequest)(object)new PlainTextRequest { Text = bodyText });
                 }
 
                 return await DeserializeAndBindRequestAsync(requestContext, endpointDescription, cancellationToken);
             }
 
-            private static async ValueTask<TRequest> DeserializeAndBindRequestAsync(HttpContext requestContext, EndpointDescription endpointDescription, CancellationToken cancellationToken)
+            private static async ValueTask<(bool hadErrors, TRequest request)> DeserializeAndBindRequestAsync(HttpContext requestContext, EndpointDescription endpointDescription, CancellationToken cancellationToken)
             {
                 var request = await requestContext.Request.GetRequestObjectAsync<TRequest>(cancellationToken: cancellationToken);
 
                 if (request is null)
                 {
-                    throw ExceptionUtilities.UnableToDeserializeRequest(endpointDescription.EndpointType);
+                    await NotifyBadRequestAsync(
+                        requestContext,
+                        $"Could not deserialize the request object for endpoint {endpointDescription.EndpointType.FullName}.",
+                        cancellationToken);
+
+                    return (true, default!);
                 }
 
                 var failures = await Binder<TRequest>.BindRequestValuesAsync(ref request, requestContext);
 
                 if (failures.Any())
                 {
-                    throw ExceptionUtilities.BindingFailed(endpointDescription.EndpointType, failures);
+                    await NotifyBadRequestAsync(
+                        requestContext,
+                        $"Failed to bind request values for endpoint {endpointDescription.EndpointType.FullName}:{Environment.NewLine}" +
+                        $"{string.Join(Environment.NewLine, failures.Select((f, i) => $"({i}): {f.Message}"))}",
+                        cancellationToken);
+
+                    return (true, default!);
                 }
 
-                return request;
+                return (false, request);
+            }
+
+            private static async ValueTask NotifyBadRequestAsync(HttpContext requestContext, string message, CancellationToken cancellationToken)
+            {
+                await requestContext.Response.SendTextResponseAsync(
+                    message,
+                    StatusCodes.Status400BadRequest, cancellationToken:
+                    cancellationToken);
             }
 
             private void SetResponse(TResponse? response)

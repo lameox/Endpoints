@@ -28,16 +28,5 @@ namespace Lameox.Endpoints
         {
             return new InvalidOperationException($"Bad Endpoint {endpointType.FullName}: You must override exactly one of the request handling methods of the endpoint.");
         }
-
-        internal static Exception UnableToDeserializeRequest(Type endpointType)
-        {
-            throw new InvalidOperationException($"Failed to deserialize the request object for endpoint {endpointType.FullName}.");
-        }
-
-        internal static Exception BindingFailed(Type endpointType, ImmutableArray<BindingFailure> failures)
-        {
-            throw new InvalidOperationException($"Failed to bind request values for endpoint {endpointType.FullName}:{Environment.NewLine}" +
-                                                $"{string.Join(Environment.NewLine, failures.Select((f, i) => $"({i}): {f.Message}"))}");
-        }
     }
 }
