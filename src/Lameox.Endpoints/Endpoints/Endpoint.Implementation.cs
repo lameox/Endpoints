@@ -101,7 +101,7 @@ namespace Lameox.Endpoints
                     throw ExceptionUtilities.UnableToDeserializeRequest(endpointDescription.EndpointType);
                 }
 
-                var failures = await Binder<TRequest>.BindRequestValuesAsync(ref request, requestContext, endpointDescription, cancellationToken);
+                var failures = await Binder<TRequest>.BindRequestValuesAsync(ref request, requestContext);
 
                 if (failures.Any())
                 {

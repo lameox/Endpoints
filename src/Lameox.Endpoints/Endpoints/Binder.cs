@@ -12,7 +12,6 @@ namespace Lameox.Endpoints
     {
         private delegate void SetPropertyDelegate(ref TRequest property, object value);
 
-
         private static readonly ImmutableDictionary<string, PropertySetter> _propertySetters;
 
         static Binder()
@@ -20,12 +19,8 @@ namespace Lameox.Endpoints
             _propertySetters = typeof(TRequest).GetProperties().ToImmutableDictionary(p => p.Name, p => PropertySetter.Create(p));
         }
 
-
-        public static ValueTask<ImmutableArray<BindingFailure>> BindRequestValuesAsync(ref TRequest request, HttpContext requestContext, EndpointDescription endpointDescription, CancellationToken cancellationToken)
+        public static ValueTask<ImmutableArray<BindingFailure>> BindRequestValuesAsync(ref TRequest request, HttpContext requestContext)
         {
-            _ = endpointDescription;
-            _ = cancellationToken;
-
             var failures = ImmutableArray.CreateBuilder<BindingFailure>();
 
             BindFormValues(ref request, requestContext, failures);
