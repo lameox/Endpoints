@@ -100,5 +100,17 @@ namespace Lameox.Endpoints
                 !method.DeclaringType!.IsConstructedGenericType ||
                 method.DeclaringType.GetGenericTypeDefinition() != genericBaseType;
         }
+
+        public static MethodInfo? FindFactoryMethodWithNameAndSignature(this Type type, string methodName, Type[] signature, Type returnType)
+        {
+            var method = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static, signature);
+
+            if (method is null || method.ReturnType != returnType)
+            {
+                return null;
+            }
+
+            return method;
+        }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Lameox.Endpoints
@@ -40,6 +39,8 @@ namespace Lameox.Endpoints
 
             private SetPropertyDelegate Setter => _lazySetter ??= CompileSetter(_propertyInfo);
             private ValueParser.TryParseValueDelegate TryParseValue => _lazyTryParseValue ??= ValueParser.Get(PropertyType);
+
+
             public bool CanParseValues => TryParseValue != ValueParser.NoParser;
             public Type PropertyType { get; }
 
@@ -51,7 +52,19 @@ namespace Lameox.Endpoints
 
             public bool TryParseAndSet(ref TRequest target, object? value)
             {
-                if (!CanParseValues || !TryParseValue(value, out var parsedValue))
+                if (value is null)
+                {
+                    return false;
+                }
+
+                var valueType = value.GetType();
+
+                if (valueType == PropertyType)
+                {
+                    return TrySet(ref target, value);
+                }
+
+                if (!CanParseValues || !TryParseValue(value.ToString() ?? string.Empty, out var parsedValue))
                 {
                     return false;
                 }
