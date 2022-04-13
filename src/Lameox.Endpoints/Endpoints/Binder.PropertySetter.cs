@@ -10,8 +10,7 @@ namespace Lameox.Endpoints
         {
             public static PropertySetter Create(PropertyInfo property)
             {
-                var setter = CompileSetter(property);
-                return new PropertySetter(property.PropertyType, setter, ValueParser.Get(property.PropertyType));
+                return new PropertySetter(property);
             }
 
             private static SetPropertyDelegate CompileSetter(PropertyInfo property)
@@ -34,29 +33,40 @@ namespace Lameox.Endpoints
                 return Expression.Lambda<SetPropertyDelegate>(assignment, targetParameter, valueParameter).Compile();
             }
 
-            private readonly SetPropertyDelegate _setter;
-            private readonly ValueParser.TryParseValueDelegate? _tryParseValue;
+            private readonly PropertyInfo _propertyInfo;
 
-            [MemberNotNullWhen(true, nameof(_tryParseValue))]
-            public bool CanParseValues => _tryParseValue is not null;
+            private SetPropertyDelegate? _lazySetter;
+            private ValueParser.TryParseValueDelegate? _lazyTryParseValue;
 
+            private SetPropertyDelegate Setter => _lazySetter ??= CompileSetter(_propertyInfo);
+            private ValueParser.TryParseValueDelegate TryParseValue => _lazyTryParseValue ??= ValueParser.Get(PropertyType);
+            public bool CanParseValues => TryParseValue != ValueParser.NoParser;
             public Type PropertyType { get; }
 
-            private PropertySetter(Type propertyType, SetPropertyDelegate setter, ValueParser.TryParseValueDelegate? tryParseValue)
+            private PropertySetter(PropertyInfo propertyInfo)
             {
-                PropertyType = propertyType;
-                _setter = setter;
-                _tryParseValue = tryParseValue;
+                _propertyInfo = propertyInfo;
+                PropertyType = _propertyInfo.PropertyType;
             }
 
-            public bool TrySet(ref TRequest target, object? value)
+            public bool TryParseAndSet(ref TRequest target, object? value)
             {
-                if (!CanParseValues || !_tryParseValue(value, out var parsedValue))
+                if (!CanParseValues || !TryParseValue(value, out var parsedValue))
                 {
                     return false;
                 }
 
-                _setter(ref target, parsedValue);
+                return TrySet(ref target, parsedValue);
+            }
+
+            public bool TrySet(ref TRequest target, object? value)
+            {
+                if (value is null || value.GetType() != PropertyType)
+                {
+                    return false;
+                }
+
+                Setter(ref target, value);
                 return true;
             }
         }

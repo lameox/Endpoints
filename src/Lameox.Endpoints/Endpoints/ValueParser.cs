@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,7 +10,13 @@ namespace Lameox.Endpoints
 {
     internal static class ValueParser
     {
-        public delegate bool TryParseValueDelegate(object? input, out object value);
+        public delegate bool TryParseValueDelegate(object? input, [NotNullWhen(true)] out object? value);
+        public static TryParseValueDelegate NoParser { get; } = NoParserImpl;
+        private static bool NoParserImpl(object? input, [NotNullWhen(true)] out object? value)
+        {
+            value = null!;
+            return false;
+        }
 
         private static ImmutableDictionary<Type, TryParseValueDelegate> Cache = ImmutableDictionary<Type, TryParseValueDelegate>.Empty;
 

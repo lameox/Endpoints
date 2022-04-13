@@ -50,7 +50,7 @@ namespace Lameox.Endpoints
                 return;
             }
 
-            if (!propertySetter.TrySet(ref request, value))
+            if (!propertySetter.TryParseAndSet(ref request, value))
             {
                 failures.Add(new BindingFailure(propertySetter.PropertyType, key, value));
             }
