@@ -28,16 +28,64 @@ namespace Lameox.Endpoints
 
             var failures = ImmutableArray.CreateBuilder<BindingFailure>();
 
+            BindFormValues(ref request, requestContext, failures);
             BindRouteValues(ref request, requestContext, failures);
+            BindQueryParameters(ref request, requestContext, failures);
 
             return ValueTask.FromResult(failures.ToImmutable());
         }
 
+        private static void BindFormValues(ref TRequest request, HttpContext requestContext, ImmutableArray<BindingFailure>.Builder failures)
+        {
+            if (!requestContext.Request.HasFormContentType)
+            {
+                return;
+            }
+
+            foreach (var formField in requestContext.Request.Form)
+            {
+                Bind(ref request, formField.Key, formField.Value[0], failures);
+            }
+
+            foreach (var formFile in requestContext.Request.Form.Files)
+            {
+                if (_propertySetters.TryGetValue(formFile.Name, out var propertySetter))
+                {
+                    if (propertySetter.PropertyType != typeof(IFormFile) || !propertySetter.TrySet(ref request, formFile))
+                    {
+                        failures.Add(new(propertySetter.PropertyType, formFile.Name, null, $"Form files can only be bound to Properties of type {nameof(IFormFile)}."));
+                    }
+                }
+            }
+
+            return;
+        }
+
         private static void BindRouteValues(ref TRequest request, HttpContext requestContext, ImmutableArray<BindingFailure>.Builder failures)
         {
+            if (!requestContext.Request.RouteValues.Any())
+            {
+                return;
+            }
+
             foreach (var routeValue in requestContext.Request.RouteValues)
             {
                 Bind(ref request, routeValue.Key, routeValue.Value, failures);
+            }
+
+            return;
+        }
+
+        private static void BindQueryParameters(ref TRequest request, HttpContext requestContext, ImmutableArray<BindingFailure>.Builder failures)
+        {
+            if (!requestContext.Request.Query.Any())
+            {
+                return;
+            }
+
+            foreach (var queryParameter in requestContext.Request.Query)
+            {
+                Bind(ref request, queryParameter.Key, queryParameter.Value[0], failures);
             }
 
             return;
