@@ -111,7 +111,7 @@ namespace Lameox.Endpoints
                     return (true, default!);
                 }
 
-                var failures = await Binder<TRequest>.BindRequestValuesAsync(ref request, requestContext);
+                var failures = await Binder<TRequest>.BindRequestValuesAsync(ref request, requestContext, endpointDescription);
 
                 if (failures.Any())
                 {

@@ -105,7 +105,7 @@ namespace Lameox.Endpoints
             _ = configuration;
             _ = route;
 
-            return EndpointDescription.Create(endpointType, route, configuration.Verbs);
+            return EndpointDescription.Create(endpointType, route, configuration.Verbs, null);
         }
     }
 }

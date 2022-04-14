@@ -6,15 +6,18 @@
 
         public string Pattern { get; }
         public HttpVerb Verbs { get; }
+        public string? PermissionClaimType { get; }
 
         private EndpointDescription(
             Type endpointType,
             string pattern,
-            HttpVerb verbs)
+            HttpVerb verbs,
+            string? permissionClaimType)
         {
             EndpointType = endpointType;
             Pattern = pattern;
             Verbs = verbs;
+            PermissionClaimType = permissionClaimType;
         }
     }
 }

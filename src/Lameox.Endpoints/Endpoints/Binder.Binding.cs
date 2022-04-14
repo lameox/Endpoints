@@ -10,7 +10,7 @@ namespace Lameox.Endpoints
 {
     internal static partial class Binder<TRequest>
     {
-        public static ValueTask<ImmutableArray<BindingFailure>> BindRequestValuesAsync(ref TRequest request, HttpContext requestContext)
+        public static ValueTask<ImmutableArray<BindingFailure>> BindRequestValuesAsync(ref TRequest request, HttpContext requestContext, EndpointDescription endpointDescription)
         {
             var failures = new FailureCollection();
 
@@ -18,7 +18,38 @@ namespace Lameox.Endpoints
             BindRouteValues(ref request, requestContext, ref failures);
             BindQueryParameters(ref request, requestContext, ref failures);
 
+            BindRequiredProperties(ref request, requestContext, ref failures, endpointDescription);
+
             return ValueTask.FromResult(failures.ToImmutable());
+        }
+
+        private static void BindRequiredProperties(ref TRequest request, HttpContext requestContext, ref FailureCollection failures, EndpointDescription endpointDescription)
+        {
+            if (_requiredProperties.Length < 1)
+            {
+                return;
+            }
+
+            foreach (var property in _requiredProperties)
+            {
+                switch (property.LookupKind)
+                {
+                    case Binder<TRequest>.LookupKind.HeaderValue:
+                        BindHeaderValue(property, ref request, requestContext, ref failures);
+                        break;
+
+                    case Binder<TRequest>.LookupKind.Claim:
+                        BindClaimValue(property, ref request, requestContext, ref failures);
+                        break;
+
+                    case Binder<TRequest>.LookupKind.Permission:
+                        BindPermissionValue(property, ref request, requestContext, ref failures, endpointDescription.PermissionClaimType);
+                        break;
+
+                    default:
+                        throw ExceptionUtilities.UnexpectedValue(property.LookupKind);
+                }
+            }
         }
 
         private static void BindFormValues(ref TRequest request, HttpContext requestContext, ref FailureCollection failures)
@@ -35,7 +66,7 @@ namespace Lameox.Endpoints
 
             foreach (var formFile in requestContext.Request.Form.Files)
             {
-                if (_propertySetters.TryGetValue(formFile.Name, out var propertySetter))
+                if (_regularProperties.TryGetValue(formFile.Name, out var propertySetter))
                 {
                     if (propertySetter.CanSetValueDirectly<IFormFile>() || !propertySetter.TryParseAndSet(ref request, formFile))
                     {
@@ -77,19 +108,105 @@ namespace Lameox.Endpoints
             return;
         }
 
-        private static void Bind(ref TRequest request, string key, object? value, ref FailureCollection failures)
+        private static void BindHeaderValue(RequiredProperty property, ref TRequest request, HttpContext requestContext, ref FailureCollection failures)
         {
-            if (!_propertySetters.TryGetValue(key, out var propertySetter))
+            if (!requestContext.Request.Headers.TryGetValue(property.LookupIdentifier, out var values))
+            {
+                if (property.IsRequired)
+                {
+                    failures.Add(
+                        new BindingFailure(
+                            property.PropertySetter.PropertyType,
+                            property.PropertySetter.PropertyName,
+                            null,
+                            $"The request is missing the required header {property.LookupIdentifier}."));
+                }
+
+                return;
+            }
+
+            BindValue(property.PropertySetter, ref request, values[0], ref failures);
+        }
+
+        private static void BindClaimValue(RequiredProperty property, ref TRequest request, HttpContext requestContext, ref FailureCollection failures)
+        {
+            var claim = requestContext.User.FindFirst(property.LookupIdentifier);
+
+            if (claim is null)
+            {
+                if (property.IsRequired)
+                {
+                    failures.Add(
+                        new BindingFailure(
+                            property.PropertySetter.PropertyType,
+                            property.PropertySetter.PropertyName,
+                            null,
+                            $"The request is missing the required claim {property.LookupIdentifier}."));
+                }
+
+                return;
+            }
+
+            BindValue(property.PropertySetter, ref request, claim.Value, ref failures);
+        }
+
+        private static void BindPermissionValue(
+            Binder<TRequest>.RequiredProperty property,
+            ref TRequest request,
+            HttpContext requestContext,
+            ref Binder<TRequest>.FailureCollection failures,
+            string? permissionClaimType)
+        {
+            if (permissionClaimType is null)
             {
                 return;
             }
 
-            if (!propertySetter.TryParseAndSet(ref request, value))
+            if (property.PropertySetter.PropertyType != typeof(bool))
             {
-                failures.Add(new BindingFailure(propertySetter.PropertyType, key, value));
+                failures.Add(
+                    new BindingFailure(
+                        property.PropertySetter.PropertyType,
+                        property.PropertySetter.PropertyName,
+                        null,
+                        $"Only properties of type {typeof(bool)} can be bound with the {nameof(HasPermissionAttribute)} attribute."));
+
+                return;
             }
 
-            return;
+            var hasPermission = requestContext.User.HasClaim(permissionClaimType, property.LookupIdentifier);
+
+            if (!hasPermission && property.IsRequired)
+            {
+                failures.Add(
+                    new BindingFailure(
+                        property.PropertySetter.PropertyType,
+                        property.PropertySetter.PropertyName,
+                        null,
+                        $"User is lacking the {property.LookupIdentifier} permission."));
+
+                return;
+            }
+
+            BindValue(property.PropertySetter, ref request, hasPermission, ref failures);
+        }
+
+        private static void Bind(ref TRequest request, string key, object? value, ref FailureCollection failures)
+        {
+            if (!_regularProperties.TryGetValue(key, out var propertySetter))
+            {
+                return;
+            }
+
+            BindValue(propertySetter, ref request, value, ref failures);
+        }
+
+        private static void BindValue(PropertySetter propertySetter, ref TRequest request, object? value, ref FailureCollection failures)
+        {
+            if (!propertySetter.TryParseAndSet(ref request, value))
+            {
+                failures.Add(new BindingFailure(propertySetter.PropertyType, propertySetter.PropertyName, value));
+            }
         }
     }
 }

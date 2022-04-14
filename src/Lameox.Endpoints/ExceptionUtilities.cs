@@ -14,6 +14,11 @@ namespace Lameox.Endpoints
             return new InvalidOperationException("This place in the code is thought to be unreachable.");
         }
 
+        public static Exception UnexpectedValue<TValue>(TValue value)
+        {
+            return new InvalidOperationException($"Encountered unexpected value of type {typeof(TValue)}: {value}.");
+        }
+
         internal static Exception DidNotAddEndpoints()
         {
             throw new NotImplementedException();

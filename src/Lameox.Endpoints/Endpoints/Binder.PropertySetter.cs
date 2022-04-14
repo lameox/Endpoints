@@ -9,6 +9,7 @@ namespace Lameox.Endpoints
         internal abstract class PropertySetter
         {
             public abstract Type PropertyType { get; }
+            public abstract string PropertyName { get; }
 
             public abstract bool TryParseAndSet(ref TRequest target, object? value);
             public abstract bool CanSetValueDirectly<TValue>();
@@ -53,6 +54,7 @@ namespace Lameox.Endpoints
             private SetPropertyDelegate Setter => _lazySetter ??= CompileSetter(_propertyInfo);
 
             public override Type PropertyType => typeof(TProperty);
+            public override string PropertyName => _propertyInfo.Name;
 
             private PropertySetter(PropertyInfo propertyInfo)
             {
