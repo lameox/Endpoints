@@ -41,7 +41,7 @@ namespace Lameox.Endpoints.Benchmarks
             public Guid ValueTypeValue { get; init; }
         }
 
-        const int Iterations = 100000;
+        private const int Iterations = 100000;
 
         private static readonly string s_input = Guid.NewGuid().ToString();
 
