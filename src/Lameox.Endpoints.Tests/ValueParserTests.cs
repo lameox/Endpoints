@@ -77,6 +77,31 @@ namespace Lameox.Endpoints.Tests
             });
         }
 
+        private class WithCreate
+        {
+            public string Value { get; }
+
+            private WithCreate(string value)
+            {
+                Value = value;
+            }
+
+            public static WithCreate Create(string input)
+            {
+                return new WithCreate(input);
+            }
+        }
+
+        [Fact]
+        public void CreateIsUsed()
+        {
+            TestParser<WithCreate>("A", (result, value) =>
+            {
+                Assert.True(result);
+                Assert.Equal("A", value!.Value);
+            });
+        }
+
         private class WithParse
         {
             public string Value { get; }
@@ -233,6 +258,12 @@ namespace Lameox.Endpoints.Tests
                 throw new InvalidOperationException();
             }
 
+            public static PrecedenceOfTryParse Create(string input)
+            {
+                _ = input;
+                throw new InvalidOperationException();
+            }
+
             public static PrecedenceOfTryParse Deserialize(string input)
             {
                 _ = input;
@@ -284,6 +315,12 @@ namespace Lameox.Endpoints.Tests
                 throw new InvalidOperationException();
             }
 
+            public static PrecedenceOfTryCreate Create(string input)
+            {
+                _ = input;
+                throw new InvalidOperationException();
+            }
+
             public static PrecedenceOfTryCreate Deserialize(string input)
             {
                 _ = input;
@@ -330,6 +367,12 @@ namespace Lameox.Endpoints.Tests
             }
 
             public static PrecedenceOfTryDeserialize Parse(string input)
+            {
+                _ = input;
+                throw new InvalidOperationException();
+            }
+
+            public static PrecedenceOfTryDeserialize Create(string input)
             {
                 _ = input;
                 throw new InvalidOperationException();

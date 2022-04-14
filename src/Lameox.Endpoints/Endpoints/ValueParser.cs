@@ -125,6 +125,7 @@ namespace Lameox.Endpoints
             var fromStringMethod =
                 typeof(TValue).FindFactoryMethodWithNameAndSignature("FromString", signature, typeof(TValue)) ??
                 typeof(TValue).FindFactoryMethodWithNameAndSignature("Parse", signature, typeof(TValue)) ??
+                typeof(TValue).FindFactoryMethodWithNameAndSignature("Create", signature, typeof(TValue)) ??
                 typeof(TValue).FindFactoryMethodWithNameAndSignature("Deserialize", signature, typeof(TValue));
 
             ConstructorInfo? constructor = null;
