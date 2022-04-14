@@ -42,8 +42,6 @@ namespace Lameox.Endpoints
                 var targetParameter = Expression.Parameter(typeof(TRequest).MakeByRefType(), "target");
                 var valueParameter = Expression.Parameter(typeof(TProperty), "value");
 
-                //var castToPropertyType = Expression.Convert(valueParameter, property.PropertyType);
-
                 var assignment = Expression.Assign(Expression.Property(targetParameter, property), valueParameter);
 
                 return Expression.Lambda<SetPropertyDelegate>(assignment, targetParameter, valueParameter).Compile();
