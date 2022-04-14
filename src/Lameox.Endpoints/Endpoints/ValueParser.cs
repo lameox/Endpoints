@@ -37,11 +37,6 @@ namespace Lameox.Endpoints
                 return null;
             }
 
-            if (typeof(TValue) == typeof(Uri))
-            {
-                return UriParser;
-            }
-
             return CompileTryParseOnTargetType();
         }
 
@@ -53,17 +48,6 @@ namespace Lameox.Endpoints
             }
 
             value = (TValue)(object)input;
-            return true;
-        }
-
-        private static bool UriParser(string input, [NotNullWhen(true)] out TValue? value)
-        {
-            if (typeof(TValue) != typeof(Uri))
-            {
-                throw ExceptionUtilities.Unreachable();
-            }
-
-            value = (TValue)(object)new Uri(input);
             return true;
         }
 
