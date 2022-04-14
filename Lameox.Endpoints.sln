@@ -9,14 +9,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lameox.Endpoints.Tests.Serv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lameox.Endpoints.Tests", "src\Lameox.Endpoints.Tests\Lameox.Endpoints.Tests.csproj", "{1A11D313-301A-4578-A347-6FF8AB68AAA8}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lameox.Endpoints.Benchmarks", "src\Lameox.Endpoints.Benchmarks\Lameox.Endpoints.Benchmarks.csproj", "{5C8BA391-800D-4CF5-AA37-73AF0357EEFE}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "engineering", "engineering", "{CDBC0310-195B-42AB-956F-93EC35A38CD5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "props", "props", "{5114A784-1AAB-41D1-90E9-2938DA8FBF64}"
 	ProjectSection(SolutionItems) = preProject
+		eng\props\BenchmarkProject.props = eng\props\BenchmarkProject.props
 		eng\props\Common.props = eng\props\Common.props
 		eng\props\ShippingAssemblyInfos.props = eng\props\ShippingAssemblyInfos.props
 		eng\props\ShippingProject.props = eng\props\ShippingProject.props
 		eng\props\TestProject.props = eng\props\TestProject.props
+		eng\props\UseShippingProject.props = eng\props\UseShippingProject.props
 	EndProjectSection
 EndProject
 Global
@@ -37,6 +41,10 @@ Global
 		{1A11D313-301A-4578-A347-6FF8AB68AAA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A11D313-301A-4578-A347-6FF8AB68AAA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A11D313-301A-4578-A347-6FF8AB68AAA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C8BA391-800D-4CF5-AA37-73AF0357EEFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C8BA391-800D-4CF5-AA37-73AF0357EEFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C8BA391-800D-4CF5-AA37-73AF0357EEFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C8BA391-800D-4CF5-AA37-73AF0357EEFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

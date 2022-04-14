@@ -1,13 +1,6 @@
 <Project>
 	<Import Project=".\Common.props" />
-
-	<PropertyGroup>
-		<TestedProjectName>$(MSBuildProjectName.Substring (0, $([MSBuild]::Subtract($(MSBuildProjectName.Length), 6))))</TestedProjectName>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\$(TestedProjectName)\$(TestedProjectName).csproj" />
-	</ItemGroup>
+    <Import Project=".\UseShippingProject.props" />
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />

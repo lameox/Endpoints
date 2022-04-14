@@ -1,0 +1,14 @@
+<Project>
+    <Import Project=".\Common.props" />
+    <Import Project=".\UseShippingProject.props" />
+
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    </ItemGroup>
+
+	<PropertyGroup>
+        <OutputType>Exe</OutputType>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+</Project>
