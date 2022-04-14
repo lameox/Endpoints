@@ -10,8 +10,6 @@ namespace Lameox.Endpoints
 {
     internal static partial class Binder<TRequest>
     {
-        private delegate void SetPropertyDelegate(ref TRequest property, object value);
-
         private static readonly ImmutableDictionary<string, PropertySetter> _propertySetters;
 
         static Binder()
@@ -46,7 +44,7 @@ namespace Lameox.Endpoints
             {
                 if (_propertySetters.TryGetValue(formFile.Name, out var propertySetter))
                 {
-                    if (propertySetter.PropertyType != typeof(IFormFile) || !propertySetter.TrySet(ref request, formFile))
+                    if (propertySetter.CanSetValueDirectly<IFormFile>() || !propertySetter.TryParseAndSet(ref request, formFile))
                     {
                         failures.Add(new(propertySetter.PropertyType, formFile.Name, null, $"Form files can only be bound to Properties of type {nameof(IFormFile)}."));
                     }
@@ -88,7 +86,7 @@ namespace Lameox.Endpoints
 
         private static void Bind(ref TRequest request, string key, object? value, ref FailureCollection failures)
         {
-            if (!_propertySetters.TryGetValue(key, out var propertySetter) || !propertySetter.CanParseValues)
+            if (!_propertySetters.TryGetValue(key, out var propertySetter))
             {
                 return;
             }

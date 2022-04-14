@@ -1,16 +1,33 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Lameox.Endpoints
 {
     internal static partial class Binder<TRequest>
     {
-        private sealed class PropertySetter
+        internal abstract class PropertySetter
         {
+            public abstract Type PropertyType { get; }
+
+            public abstract bool TryParseAndSet(ref TRequest target, object? value);
+            public abstract bool CanSetValueDirectly<TValue>();
+
             public static PropertySetter Create(PropertyInfo property)
             {
-                return new PropertySetter(property);
+                var genericType = typeof(PropertySetter<>).MakeGenericType(typeof(TRequest), property.PropertyType);
+                return (PropertySetter)genericType
+                    .GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance)
+                    .Single()
+                    .Invoke(new[] { property });
             }
+        }
+
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "<Pending>")]
+        internal sealed class PropertySetter<TProperty> : PropertySetter
+        {
+            private delegate void SetPropertyDelegate(ref TRequest property, TProperty value);
 
             private static SetPropertyDelegate CompileSetter(PropertyInfo property)
             {
@@ -23,11 +40,11 @@ namespace Lameox.Endpoints
                 // }
 
                 var targetParameter = Expression.Parameter(typeof(TRequest).MakeByRefType(), "target");
-                var valueParameter = Expression.Parameter(typeof(object), "value");
+                var valueParameter = Expression.Parameter(typeof(TProperty), "value");
 
-                var castToPropertyType = Expression.Convert(valueParameter, property.PropertyType);
+                //var castToPropertyType = Expression.Convert(valueParameter, property.PropertyType);
 
-                var assignment = Expression.Assign(Expression.Property(targetParameter, property), castToPropertyType);
+                var assignment = Expression.Assign(Expression.Property(targetParameter, property), valueParameter);
 
                 return Expression.Lambda<SetPropertyDelegate>(assignment, targetParameter, valueParameter).Compile();
             }
@@ -35,36 +52,34 @@ namespace Lameox.Endpoints
             private readonly PropertyInfo _propertyInfo;
 
             private SetPropertyDelegate? _lazySetter;
-            private ValueParser.TryParseValueDelegate? _lazyTryParseValue;
-
             private SetPropertyDelegate Setter => _lazySetter ??= CompileSetter(_propertyInfo);
-            private ValueParser.TryParseValueDelegate TryParseValue => _lazyTryParseValue ??= ValueParser.Get(PropertyType);
 
-
-            public bool CanParseValues => TryParseValue != ValueParser.NoParser;
-            public Type PropertyType { get; }
+            public override Type PropertyType => typeof(TProperty);
 
             private PropertySetter(PropertyInfo propertyInfo)
             {
+                Debug.Assert(propertyInfo.PropertyType == typeof(TProperty));
                 _propertyInfo = propertyInfo;
-                PropertyType = _propertyInfo.PropertyType;
             }
 
-            public bool TryParseAndSet(ref TRequest target, object? value)
+            public override bool CanSetValueDirectly<TValue>()
+            {
+                return typeof(TProperty) == typeof(TValue);
+            }
+
+            public override bool TryParseAndSet(ref TRequest target, object? value)
             {
                 if (value is null)
                 {
                     return false;
                 }
 
-                var valueType = value.GetType();
-
-                if (valueType == PropertyType)
+                if (value is TProperty typedValue)
                 {
-                    return TrySet(ref target, value);
+                    return TrySet(ref target, typedValue);
                 }
 
-                if (!CanParseValues || !TryParseValue(value.ToString() ?? string.Empty, out var parsedValue))
+                if (!ValueParser<TProperty>.HasParser || !ValueParser<TProperty>.TryParseValue(value.ToString() ?? string.Empty, out var parsedValue))
                 {
                     return false;
                 }
@@ -72,13 +87,8 @@ namespace Lameox.Endpoints
                 return TrySet(ref target, parsedValue);
             }
 
-            public bool TrySet(ref TRequest target, object? value)
+            private bool TrySet(ref TRequest target, TProperty value)
             {
-                if (value is null || value.GetType() != PropertyType)
-                {
-                    return false;
-                }
-
                 Setter(ref target, value);
                 return true;
             }

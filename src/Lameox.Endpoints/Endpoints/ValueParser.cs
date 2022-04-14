@@ -11,117 +11,90 @@ using System.Threading.Tasks;
 
 namespace Lameox.Endpoints
 {
-    internal static class ValueParser
+    internal static class ValueParser<TValue>
     {
-        public delegate bool TryParseValueDelegate(string input, [NotNullWhen(true)] out object? value);
-        public static TryParseValueDelegate NoParser { get; } = NoParserImpl;
-        private static bool NoParserImpl(string input, [NotNullWhen(true)] out object? value)
-        {
-            value = null!;
-            return false;
-        }
+        public delegate bool TryParseValueDelegate(string input, [NotNullWhen(true)] out TValue? value);
 
-        private static ImmutableDictionary<Type, TryParseValueDelegate> Cache = ImmutableDictionary<Type, TryParseValueDelegate>.Empty;
+        [MemberNotNullWhen(true, nameof(TryParseValue))]
+        public static bool HasParser => TryParseValue is not null;
+        public static TryParseValueDelegate? TryParseValue { get; } = CreateParser();
 
-        public static TryParseValueDelegate Get<TTargetType>()
+        private static TryParseValueDelegate? CreateParser()
         {
-            return Get(typeof(TTargetType));
-        }
-
-        public static TryParseValueDelegate Get(Type targetType)
-        {
-            return ImmutableInterlocked.GetOrAdd(ref Cache, targetType, CreateValueParserForType);
-        }
-
-        private static TryParseValueDelegate CreateValueParserForType(Type targetType)
-        {
-            if (targetType == typeof(string))
+            if (typeof(TValue) == typeof(string))
             {
                 return StringParser;
             }
 
-            if (targetType.IsEnum)
+            if (typeof(TValue).IsEnum)
             {
-                return EnumParser(targetType);
+                return EnumParser;
             }
 
-            if (targetType == typeof(Uri))
+            if (typeof(TValue).IsInterface)
+            {
+                //we can never parse interfaces since we dont know which implementing class to call
+                return null;
+            }
+
+            if (typeof(TValue) == typeof(Uri))
             {
                 return UriParser;
             }
 
-            return CompileTryParseOnTargetType(targetType);
+            return CompileTryParseOnTargetType();
         }
 
-        private static bool StringParser(string input, [NotNullWhen(true)] out object? value)
+        private static bool StringParser(string input, [NotNullWhen(true)] out TValue? value)
         {
-            value = input;
+            if (typeof(TValue) != typeof(string))
+            {
+                throw ExceptionUtilities.Unreachable();
+            }
+
+            value = (TValue)(object)input;
             return true;
         }
 
-        private static bool UriParser(string input, [NotNullWhen(true)] out object? value)
+        private static bool UriParser(string input, [NotNullWhen(true)] out TValue? value)
         {
-            value = new Uri(input);
+            if (typeof(TValue) != typeof(Uri))
+            {
+                throw ExceptionUtilities.Unreachable();
+            }
+
+            value = (TValue)(object)new Uri(input);
             return true;
         }
 
-        private static bool IntParser(string input, [NotNullWhen(true)] out object? value)
+        private static bool EnumParser(string input, [NotNullWhen(true)] out TValue? value)
         {
-            if (int.TryParse(input, out int result))
+            if (Enum.TryParse(typeof(TValue), input, out var result))
             {
-                value = result;
-                return true;
+                value = (TValue)(object)result!;
+                return value is not null;
             }
 
-            value = null;
+            value = default;
             return false;
         }
 
-        private static bool GuidParser(string input, [NotNullWhen(true)] out object? value)
+        private static TryParseValueDelegate? CompileTryParseOnTargetType()
         {
-            if (int.TryParse(input, out int result))
-            {
-                value = result;
-                return true;
-            }
-
-            value = null;
-            return false;
-        }
-
-        private static TryParseValueDelegate EnumParser(Type targetType)
-        {
-            bool EnumParserImpl(string input, [NotNullWhen(true)] out object? value)
-            {
-                if (Enum.TryParse(targetType, input, out var result))
-                {
-                    value = result;
-                    return value is not null;
-                }
-
-                value = null;
-                return false;
-            }
-
-            return EnumParserImpl;
-        }
-
-        private static TryParseValueDelegate CompileTryParseOnTargetType(Type targetType)
-        {
-            var signature = new[] { typeof(string), targetType.MakeByRefType() };
+            var signature = new[] { typeof(string), typeof(TValue).MakeByRefType() };
 
             var tryParseMethod =
-                targetType.FindFactoryMethodWithNameAndSignature("TryParse", signature, typeof(bool)) ??
-                targetType.FindFactoryMethodWithNameAndSignature("TryCreate", signature, typeof(bool)) ??
-                targetType.FindFactoryMethodWithNameAndSignature("TryDeserialize", signature, typeof(bool));
+                typeof(TValue).FindFactoryMethodWithNameAndSignature("TryParse", signature, typeof(bool)) ??
+                typeof(TValue).FindFactoryMethodWithNameAndSignature("TryCreate", signature, typeof(bool)) ??
+                typeof(TValue).FindFactoryMethodWithNameAndSignature("TryDeserialize", signature, typeof(bool));
 
             if (tryParseMethod is null)
             {
-                return CompileFromStringOnTargetType(targetType);
+                return CompileFromStringOnTargetType();
             }
 
             //we compile the following pseudocode:
-            //bool TryParse(string input, out object? value)
+            //bool TryParse(string input, out TValue? value)
             //{
             //    var success = TYPE.TryParse(input, out var result);
             //    if(success)
@@ -132,10 +105,14 @@ namespace Lameox.Endpoints
             //    return sucess;
             //}
 
-            var method = new DynamicMethod($"{nameof(ValueParser)}_{targetType.FullName}", typeof(bool), new Type[] { typeof(string), typeof(object).MakeByRefType() });
+            var method = new DynamicMethod(
+                $"{nameof(ValueParser<TValue>)}_{typeof(TValue).FullName}",
+                typeof(bool),
+                new Type[] { typeof(string), typeof(TValue).MakeByRefType() });
+
             var il = method.GetILGenerator();
 
-            il.DeclareLocal(targetType);            //result of TryParse
+            il.DeclareLocal(typeof(TValue));            //result of TryParse
             il.DeclareLocal(typeof(bool));          //return value of TryParse
 
             il.Emit(OpCodes.Ldarg_0);               //load the string input
@@ -147,11 +124,6 @@ namespace Lameox.Endpoints
             il.Emit(OpCodes.Ldarg_1);               //load the output argument for use in Stind_Ref
             il.Emit(OpCodes.Ldloc_0);               //load the result
 
-            if (targetType.IsValueType)             //box value types
-            {
-                il.Emit(OpCodes.Box, targetType);
-            }
-
             il.Emit(OpCodes.Stind_Ref);             //store the result in the result variable
 
             il.Emit(OpCodes.Ldloc_1);               //load the boolean success again before leaving the method.
@@ -160,30 +132,30 @@ namespace Lameox.Endpoints
             return method.CreateDelegate<TryParseValueDelegate>();
         }
 
-        private static TryParseValueDelegate CompileFromStringOnTargetType(Type targetType)
+        private static TryParseValueDelegate? CompileFromStringOnTargetType()
         {
             var signature = new[] { typeof(string) };
 
             var fromStringMethod =
-                targetType.FindFactoryMethodWithNameAndSignature("FromString", signature, targetType) ??
-                targetType.FindFactoryMethodWithNameAndSignature("Parse", signature, targetType) ??
-                targetType.FindFactoryMethodWithNameAndSignature("Deserialize", signature, targetType);
+                typeof(TValue).FindFactoryMethodWithNameAndSignature("FromString", signature, typeof(TValue)) ??
+                typeof(TValue).FindFactoryMethodWithNameAndSignature("Parse", signature, typeof(TValue)) ??
+                typeof(TValue).FindFactoryMethodWithNameAndSignature("Deserialize", signature, typeof(TValue));
 
             ConstructorInfo? constructor = null;
 
             if (fromStringMethod is null)
             {
-                constructor = targetType.GetConstructor(signature);
+                constructor = typeof(TValue).GetConstructor(signature);
             }
 
             if (fromStringMethod is null && constructor is null)
             {
-                return NoParser;
+                return null;
             }
 
 
             //we compile the following pseudocode:
-            //bool TryParse(string input, out object? value)
+            //bool TryParse(string input, out TValue? value)
             //{
             //    try
             //    {
@@ -199,7 +171,7 @@ namespace Lameox.Endpoints
             //
             //or alternatively if only a constructor is found:
             //
-            //bool TryParse(string input, out object? value)
+            //bool TryParse(string input, out TValue? value)
             //{
             //    try
             //    {
@@ -213,7 +185,11 @@ namespace Lameox.Endpoints
             //    }
             //}
 
-            var method = new DynamicMethod($"{nameof(ValueParser)}_{targetType.FullName}", typeof(bool), new Type[] { typeof(string), typeof(object).MakeByRefType() });
+            var method = new DynamicMethod(
+                $"{nameof(ValueParser<TValue>)}_{typeof(TValue).FullName}",
+                typeof(bool),
+                new Type[] { typeof(string), typeof(TValue).MakeByRefType() });
+
             var il = method.GetILGenerator();
 
             var returnLabel = il.DefineLabel();
@@ -234,10 +210,6 @@ namespace Lameox.Endpoints
                 il.Emit(OpCodes.Newobj, constructor!);
             }
 
-            if (targetType.IsValueType)             //box value types
-            {
-                il.Emit(OpCodes.Box, targetType);
-            }
 
             il.Emit(OpCodes.Stind_Ref);             //store the result in the result variable
 

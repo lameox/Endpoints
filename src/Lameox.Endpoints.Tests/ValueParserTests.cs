@@ -12,7 +12,13 @@ namespace Lameox.Endpoints.Tests
     {
         private static void TestParser<T>(string input, Action<bool, T?> assertResult)
         {
-            var parser = ValueParser.Get<T>();
+            if (!ValueParser<T>.HasParser)
+            {
+                assertResult(false, default);
+                return;
+            }
+
+            var parser = ValueParser<T>.TryParseValue!;
             var result = parser(input, out var parsedObject);
 
             if (result)
