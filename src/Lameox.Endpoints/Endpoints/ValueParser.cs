@@ -42,6 +42,8 @@ namespace Lameox.Endpoints
 
         private static bool StringParser(string input, [NotNullWhen(true)] out TValue? value)
         {
+            //PERF: This check will resolve to a constant true or false when jitting which
+            //      means we dont actually incur any performance hit here since the JIT will remove the branch.
             if (typeof(TValue) != typeof(string))
             {
                 throw ExceptionUtilities.Unreachable();
