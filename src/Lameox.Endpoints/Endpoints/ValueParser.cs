@@ -98,7 +98,7 @@ namespace Lameox.Endpoints
 
             var il = method.GetILGenerator();
 
-            il.DeclareLocal(typeof(TValue));            //result of TryParse
+            il.DeclareLocal(typeof(TValue));        //result of TryParse
             il.DeclareLocal(typeof(bool));          //return value of TryParse
 
             il.Emit(OpCodes.Ldarg_0);               //load the string input
