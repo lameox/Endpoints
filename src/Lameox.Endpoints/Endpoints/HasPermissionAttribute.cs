@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace Lameox.Endpoints
 {
+    /// <summary>
+    /// Can be used to bind to a Property of type <see cref="bool"/>.
+    /// The Property will be <see langword="true"/> if the user has the given permission, otherwise it will be false.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public sealed class HasPermissionAttribute : Attribute
     {

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Lameox.Endpoints
 {
+    /// <summary>
+    /// Can be used to bind to the value of a claim with the given name.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public sealed class FromClaimAttribute : Attribute
     {

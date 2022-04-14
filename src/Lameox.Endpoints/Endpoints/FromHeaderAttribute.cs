@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Lameox.Endpoints
 {
+    /// <summary>
+    /// Can be uesd to bin to a value from the requests headers.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public sealed class FromHeaderAttribute : Attribute
     {
