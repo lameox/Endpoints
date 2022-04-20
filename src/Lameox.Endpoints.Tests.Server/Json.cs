@@ -1,4 +1,6 @@
-﻿namespace Lameox.Endpoints.Tests.Server
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Lameox.Endpoints.Tests.Server
 {
     public class Json
     {
@@ -6,14 +8,34 @@
         {
             public string A { get; init; }
             public string B { get; init; }
-            public int C { get; init; }
+            public C C { get; init; }
         }
 
+        public class C
+        {
+            public int Value { get; }
+
+            public C(string v)
+            {
+                Value = int.Parse(v);
+            }
+            public C(int v)
+            {
+                Value = v;
+            }
+
+            //public static C Parse(string input)
+            //{
+            //    return new C(int.Parse(input));
+            //}
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public class EndpointImpl : Endpoint.WithRequest<Request>.WithResponse<string>
         {
             protected override ValueTask<string> GetResponseAsync(Request request, CancellationToken cancellationToken)
             {
-                return ValueTask.FromResult(request.A + " " + request.B + ": " + request.C);
+                return ValueTask.FromResult(request.A + " " + request.B + ": " + request.C.Value);
             }
 
             protected override EndpointConfiguration Configure(EndpointConfiguration configuration)

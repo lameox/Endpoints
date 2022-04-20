@@ -102,8 +102,6 @@ namespace Lameox.Endpoints
             //TODO
 
             _ = services;
-            _ = configuration;
-            _ = route;
 
             return EndpointDescription.Create(endpointType, route, configuration.Verbs, null);
         }

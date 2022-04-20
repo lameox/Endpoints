@@ -9,11 +9,17 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Lameox.Endpoints
 {
     public static class StartupExtensions
     {
+        /// <summary>
+        /// Only used to get a logger with a meaningful name
+        /// </summary>
+        private class SimpleEndpointMiddleware { }
+
         public static IServiceCollection AddSimpleEndpoints(this IServiceCollection services, IEnumerable<Assembly>? additionalEndpointAssemblies = null)
         {
             var endpoints = new EndpointDescriptionsBuilder(services, additionalEndpointAssemblies ?? Array.Empty<Assembly>());
@@ -57,7 +63,15 @@ namespace Lameox.Endpoints
 
         private static async Task MisconfigurationFallbackAsync(HttpContext context)
         {
+            const string Message =
+                $"The middleware is misconfigured. Call {nameof(UseSimpleEndpoints)}() after any routing " +
+                $"middleware like {nameof(EndpointRoutingApplicationBuilderExtensions.UseRouting)}() " +
+                $"and before any terminating middleware like {nameof(EndpointRoutingApplicationBuilderExtensions.UseEndpoints)}().";
+
             var hostEnvironment = context.RequestServices.GetService<IHostEnvironment>();
+
+            var logger = context.RequestServices.GetService<ILogger<SimpleEndpointMiddleware>>();
+            logger?.LogWarning(Message);
 
             // if we cant know for sure that we are running in a development environment we just return a 500
             // since we dont want to leak implementation details to users.
@@ -66,11 +80,6 @@ namespace Lameox.Endpoints
                 await context.Response.SendGeneralServerErrorAsync();
                 return;
             }
-
-            const string Message =
-                $"The middleware is misconfigured. Call {nameof(UseSimpleEndpoints)}() after any routing " +
-                $"middleware like {nameof(EndpointRoutingApplicationBuilderExtensions.UseRouting)}() " +
-                $"and before any terminating middleware like {nameof(EndpointRoutingApplicationBuilderExtensions.UseEndpoints)}().";
 
             await context.Response.SendGeneralServerErrorAsync(Message);
         }
