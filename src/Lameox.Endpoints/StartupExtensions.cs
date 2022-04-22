@@ -123,6 +123,11 @@ namespace Lameox.Endpoints
 
         private static void MapAnonymousEndpointVerbs(IEndpointRouteBuilder builder, EndpointDescription endpointDescription)
         {
+            if (endpointDescription.AnonymousVerbs == HttpVerb.None)
+            {
+                return;
+            }
+
             var endpoint = builder
                             .MapMethods(
                                 endpointDescription.Pattern,
@@ -136,6 +141,11 @@ namespace Lameox.Endpoints
 
         private static void MapAuthorizedEndpointVerbs(IEndpointRouteBuilder builder, EndpointDescription endpointDescription)
         {
+            if (endpointDescription.AuthorizedVerbs == HttpVerb.None)
+            {
+                return;
+            }
+
             var endpoint = builder
                             .MapMethods(
                                 endpointDescription.Pattern,
