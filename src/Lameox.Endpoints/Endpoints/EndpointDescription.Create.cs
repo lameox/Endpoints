@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Microsoft.AspNetCore.Builder;
 
 namespace Lameox.Endpoints
 {
@@ -10,7 +11,8 @@ namespace Lameox.Endpoints
             HttpVerb anonymousVerbs,
             HttpVerb authorizedVerbs,
             string? permissionClaimType,
-            ImmutableArray<string> customPolicies)
+            ImmutableArray<string> customPolicies,
+            Action<IEndpointConventionBuilder>? customUserOptions)
         {
             return new EndpointDescription(
                 endpointType,
@@ -18,7 +20,8 @@ namespace Lameox.Endpoints
                 anonymousVerbs,
                 authorizedVerbs,
                 permissionClaimType,
-                customPolicies);
+                customPolicies,
+                customUserOptions);
         }
     }
 }

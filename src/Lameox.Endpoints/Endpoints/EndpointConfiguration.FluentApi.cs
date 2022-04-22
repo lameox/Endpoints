@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 
 namespace Lameox.Endpoints
 {
@@ -49,6 +50,12 @@ namespace Lameox.Endpoints
         public EndpointConfiguration WithVerbs(HttpVerb verbs)
         {
             Verbs = verbs;
+            return this;
+        }
+
+        public EndpointConfiguration WithOptions(Action<IEndpointConventionBuilder> builderOptions)
+        {
+            CustomUserOptions = builderOptions;
             return this;
         }
     }

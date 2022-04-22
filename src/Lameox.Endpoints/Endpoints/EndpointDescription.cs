@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using Microsoft.AspNetCore.Builder;
 
 namespace Lameox.Endpoints
 {
@@ -9,8 +10,10 @@ namespace Lameox.Endpoints
         public string Pattern { get; }
         public HttpVerb AnonymousVerbs { get; }
         public HttpVerb AuthorizedVerbs { get; }
-        public string? PermissionClaimType { get; }
 
+        public Action<IEndpointConventionBuilder>? CustomUserOptions { get; }
+
+        public string? PermissionClaimType { get; }
         internal bool RequiresAuthorizationPipeline => AuthorizedVerbs != HttpVerb.None || !CustomPolicies.IsDefaultOrEmpty;
 
         public ImmutableArray<string> CustomPolicies { get; }
@@ -31,7 +34,8 @@ namespace Lameox.Endpoints
             HttpVerb anonymousVerbs,
             HttpVerb authorizedVerbs,
             string? permissionClaimType,
-            ImmutableArray<string> customPolicies)
+            ImmutableArray<string> customPolicies,
+            Action<IEndpointConventionBuilder>? customUserOptions)
         {
             EndpointType = endpointType;
             Pattern = pattern;
@@ -39,6 +43,7 @@ namespace Lameox.Endpoints
             AuthorizedVerbs = authorizedVerbs;
             PermissionClaimType = permissionClaimType;
             CustomPolicies = customPolicies;
+            CustomUserOptions = customUserOptions;
         }
 
         private string? _cachedEndpointPolicyName;

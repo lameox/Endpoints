@@ -131,7 +131,7 @@ namespace Lameox.Endpoints
                             .WithMetadata(endpointDescription)
                             .AllowAnonymous();
 
-            MapCommonEndpointProperties(endpoint);
+            MapCommonEndpointProperties(endpoint, endpointDescription);
         }
 
         private static void MapAuthorizedEndpointVerbs(IEndpointRouteBuilder builder, EndpointDescription endpointDescription)
@@ -146,7 +146,7 @@ namespace Lameox.Endpoints
             var authorizeData = CreateAuthorizeDataForEndpoint(endpointDescription);
             endpoint = endpoint.RequireAuthorization(authorizeData);
 
-            MapCommonEndpointProperties(endpoint);
+            MapCommonEndpointProperties(endpoint, endpointDescription);
         }
 
         private static IAuthorizeData[] CreateAuthorizeDataForEndpoint(EndpointDescription endpointDescription)
@@ -184,10 +184,12 @@ namespace Lameox.Endpoints
             }).ToArray();
         }
 
-        private static void MapCommonEndpointProperties(IEndpointConventionBuilder endpoint)
+        private static void MapCommonEndpointProperties(IEndpointConventionBuilder endpoint, EndpointDescription endpointDescription)
         {
-            _ = endpoint;
-            //TODO
+            if (endpointDescription.CustomUserOptions is not null)
+            {
+                endpointDescription.CustomUserOptions(endpoint);
+            }
         }
 
         private static async Task MisconfigurationFallbackAsync(HttpContext context)
