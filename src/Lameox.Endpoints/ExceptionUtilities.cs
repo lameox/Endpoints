@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 
 namespace Lameox.Endpoints
 {
@@ -41,12 +42,17 @@ namespace Lameox.Endpoints
 
         internal static Exception MissingAuthenticationMiddleware(Type endpointType)
         {
-            throw new InvalidOperationException($"The endpoint {endpointType.FullName} has authorization metadata but no authorization middleware has run. This indicates a missing middleware registration.");
+            throw new InvalidOperationException(
+                $"The endpoint {endpointType.FullName} has authorization metadata but no authorization middleware has run. This indicates a missing middleware registration." +
+                $"{Environment.NewLine}" +
+                $"Ensure you have called {nameof(AuthorizationAppBuilderExtensions.UseAuthorization)}() before {nameof(StartupExtensions.UseSimpleEndpoints)}().");
         }
 
         internal static Exception MissingCorsMiddleware(Type endpointType)
         {
-            throw new InvalidOperationException($"The endpoint {endpointType.FullName} has CORS metadata but no CORS middleware has run. This indicates a missing middleware registration.");
+            throw new InvalidOperationException($"The endpoint {endpointType.FullName} has CORS metadata but no CORS middleware has run. This indicates a missing middleware registration." +
+                $"{Environment.NewLine}" +
+                $"Ensure you have called {nameof(CorsMiddlewareExtensions.UseCors)}() before {nameof(StartupExtensions.UseSimpleEndpoints)}().");
         }
     }
 }
