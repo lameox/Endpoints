@@ -103,7 +103,7 @@ namespace Lameox.Endpoints
 
             _ = services;
 
-            return EndpointDescription.Create(endpointType, route, configuration.Verbs, null);
+            return EndpointDescription.Create(endpointType, route, configuration.Verbs, HttpVerb.None, null, ImmutableArray<string>.Empty);
         }
     }
 }

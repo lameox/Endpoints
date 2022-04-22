@@ -1,18 +1,24 @@
-﻿namespace Lameox.Endpoints
+﻿using System.Collections.Immutable;
+
+namespace Lameox.Endpoints
 {
     public partial class EndpointDescription
     {
         internal static EndpointDescription Create(
             Type endpointType,
             string pattern,
-            HttpVerb verbs,
-            string? permissionClaimType)
+            HttpVerb anonymousVerbs,
+            HttpVerb authorizedVerbs,
+            string? permissionClaimType,
+            ImmutableArray<string> customPolicies)
         {
             return new EndpointDescription(
                 endpointType,
                 pattern,
-                verbs,
-                permissionClaimType);
+                anonymousVerbs,
+                authorizedVerbs,
+                permissionClaimType,
+                customPolicies);
         }
     }
 }

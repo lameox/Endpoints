@@ -33,5 +33,10 @@ namespace Lameox.Endpoints
         {
             return new InvalidOperationException($"Bad Endpoint {endpointType.FullName}: You must override exactly one of the request handling methods of the endpoint.");
         }
+
+        internal static Exception NoPermissionClaimType(Type endpointType)
+        {
+            throw new NotImplementedException($"Bad Endpoint {endpointType.FullName}: The endpoint has specified required permission claims but no permission claim type.");
+        }
     }
 }
