@@ -1,0 +1,2 @@
+[![Latest Commit](https://github.com/lameox/Endpoints/actions/workflows/build-and-test-prs-and-commits.yml/badge.svg)](https://github.com/lameox/Endpoints/actions/workflows/build-and-test-prs-and-commits.yml)
+[![Latest Package](https://github.com/lameox/Endpoints/actions/workflows/create-package-for-tag.yml/badge.svg)](https://github.com/lameox/Endpoints/actions/workflows/create-package-for-tag.yml)
