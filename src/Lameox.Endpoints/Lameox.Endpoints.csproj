@@ -12,6 +12,10 @@
 
     <PropertyGroup>
         <PackageId>Lameox.Endpoints</PackageId>
+        <PackageTags>ASP.NET;aspnet;aspnetcore;webapi;dotnet6;net6;repr</PackageTags>
+        <Description>
+            A light-weight framework for defining simple and fast endpoints implementing the REPR pattern on top of ASP.NET Minimal API.            
+        </Description>
     </PropertyGroup>
 
 </Project>
