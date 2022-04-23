@@ -3,6 +3,10 @@
     <Import Project="..\..\eng\props\Common.props" />
 
     <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Lameox.Endpoints\Lameox.Endpoints.csproj" />
     </ItemGroup>
     
