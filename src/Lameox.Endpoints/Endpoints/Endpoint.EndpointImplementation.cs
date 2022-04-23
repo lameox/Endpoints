@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lameox.Endpoints
 {
@@ -99,7 +100,8 @@ namespace Lameox.Endpoints
 
             private static async ValueTask<(bool hadErrors, TRequest request)> DeserializeAndBindRequestAsync(HttpContext requestContext, EndpointDescription endpointDescription, CancellationToken cancellationToken)
             {
-                var request = await requestContext.Request.GetRequestObjectAsync<TRequest>(cancellationToken: cancellationToken);
+                var serializerOptions = requestContext.RequestServices.GetRequiredService<EndpointSerializationOptions>().JsonOptions;
+                var request = await requestContext.Request.GetRequestObjectAsync<TRequest>(serializerOptions, cancellationToken: cancellationToken);
 
                 if (request is null)
                 {
@@ -162,7 +164,9 @@ namespace Lameox.Endpoints
                     return;
                 }
 
-                await requestContext.Response.SendJsonResponseAsync(response, cancellationToken: cancellationToken);
+                var serializerOptions = requestContext.RequestServices.GetRequiredService<EndpointSerializationOptions>().JsonOptions;
+
+                await requestContext.Response.SendJsonResponseAsync(response, serializerOptions, cancellationToken: cancellationToken);
             }
         }
     }

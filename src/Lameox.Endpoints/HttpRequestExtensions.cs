@@ -13,7 +13,8 @@ namespace Lameox.Endpoints
     {
         public static async ValueTask<TRequest?> GetRequestObjectAsync<TRequest>(
             this HttpRequest httpRequest,
-            JsonSerializerOptions? serializerOptions = null,
+            JsonSerializerOptions serializerOptions,
+            JsonSerializerContext? serializerContext = null,
             CancellationToken cancellationToken = default)
             where TRequest : notnull, new()
         {
@@ -22,12 +23,13 @@ namespace Lameox.Endpoints
                 return new TRequest();
             }
 
-            if (serializerOptions is null)
+            if (serializerContext is null)
             {
-                return await JsonSerializer.DeserializeAsync<TRequest>(httpRequest.Body, cancellationToken: cancellationToken);
+                return await JsonSerializer.DeserializeAsync<TRequest>(httpRequest.Body, serializerOptions, cancellationToken: cancellationToken);
             }
 
-            return await JsonSerializer.DeserializeAsync<TRequest>(httpRequest.Body, serializerOptions, cancellationToken: cancellationToken);
+            var result = await JsonSerializer.DeserializeAsync(httpRequest.Body, typeof(TRequest), serializerContext, cancellationToken: cancellationToken);
+            return (TRequest)result!;
         }
     }
 }

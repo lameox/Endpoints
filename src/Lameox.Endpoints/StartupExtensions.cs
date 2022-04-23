@@ -7,10 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Lameox.Endpoints
 {
@@ -25,6 +27,12 @@ namespace Lameox.Endpoints
         {
             var endpoints = new EndpointDescriptionsBuilder(services, additionalEndpointAssemblies ?? Array.Empty<Assembly>());
             services.AddSingleton(endpoints);
+
+            services.AddSingleton(serviceProvider =>
+            {
+                var serializerOptions = serviceProvider.GetService<IOptions<JsonOptions>>()?.Value.SerializerOptions ?? new();
+                return new EndpointSerializationOptions(serializerOptions);
+            });
 
             AddAuthorizationIfRequired(services, endpoints);
 

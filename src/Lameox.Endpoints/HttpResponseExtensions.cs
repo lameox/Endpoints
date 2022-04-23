@@ -65,9 +65,10 @@ namespace Lameox.Endpoints
         public static async ValueTask SendJsonResponseAsync<TResponse>(
             this HttpResponse httpResponse,
             TResponse response,
+            JsonSerializerOptions serializerOptions,
+            JsonSerializerContext? serializerContext = null,
             int statusCode = StatusCodes.Status200OK,
             string contentType = System.Net.Mime.MediaTypeNames.Application.Json,
-            JsonSerializerOptions? serializerOptions = null,
             CancellationToken cancellationToken = default)
             where TResponse : notnull
         {
@@ -78,13 +79,13 @@ namespace Lameox.Endpoints
 
             httpResponse.MarkAsResponseSending();
 
-            if (serializerOptions is null)
+            if (serializerContext is null)
             {
-                await JsonSerializer.SerializeAsync<TResponse>(httpResponse.Body, response, cancellationToken: cancellationToken);
+                await JsonSerializer.SerializeAsync(httpResponse.Body, response, serializerOptions, cancellationToken: cancellationToken);
                 return;
             }
 
-            await JsonSerializer.SerializeAsync<TResponse>(httpResponse.Body, response, serializerOptions, cancellationToken: cancellationToken);
+            await JsonSerializer.SerializeAsync(httpResponse.Body, response, typeof(TResponse), serializerContext, cancellationToken: cancellationToken);
         }
 
         public static async ValueTask SendGeneralServerErrorAsync(this HttpResponse response, CancellationToken cancellationToken = default)
