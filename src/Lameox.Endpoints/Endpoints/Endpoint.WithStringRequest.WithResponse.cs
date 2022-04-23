@@ -31,27 +31,28 @@ namespace Lameox.Endpoints
                     return endpointType.IsMethodOverridden(getResponseAsyncMethod);
                 }
 
-                private readonly Implementation<PlainTextRequest, TResponse> _implementation;
+                private EndpointImplementation<PlainTextRequest, TResponse>? _implementation;
+                private EndpointImplementation<PlainTextRequest, TResponse> Implementation => _implementation ??= Initialize();
 
-                public EndpointConfiguration Configuration => ((IEndpoint)_implementation).Configuration;
+                public EndpointConfiguration Configuration => Implementation.Configuration;
                 public ValueTask HandleRequestAsync(HttpContext requestContext, CancellationToken cancellationToken)
                 {
-                    return ((IEndpoint)_implementation).HandleRequestAsync(requestContext, cancellationToken);
+                    return Implementation.HandleRequestAsync(requestContext, cancellationToken);
                 }
 
-                protected WithResponse()
+                private EndpointImplementation<PlainTextRequest, TResponse> Initialize()
                 {
                     EnsureCorrectOverrides(GetType(), IsHandleAsyncOverridden, IsGetResponseAsyncOverridden, out var useHandleAsyncInImplementation);
 
                     if (useHandleAsyncInImplementation)
                     {
-                        _implementation = new Implementation<PlainTextRequest, TResponse>(
+                        return new EndpointImplementation<PlainTextRequest, TResponse>(
                             Configure,
                             CallableHandleAsync);
                     }
                     else
                     {
-                        _implementation = new Implementation<PlainTextRequest, TResponse>(
+                        return new EndpointImplementation<PlainTextRequest, TResponse>(
                             Configure,
                             CallableGetResponseAsync);
                     }

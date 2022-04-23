@@ -29,27 +29,28 @@ namespace Lameox.Endpoints
                 return endpointType.IsMethodOverridden(getResponseAsyncMethod);
             }
 
-            private readonly Implementation<NoRequest, TResponse> _implementation;
+            private EndpointImplementation<NoRequest, TResponse>? _implementation;
+            private EndpointImplementation<NoRequest, TResponse> Implementation => _implementation ??= Initialize();
 
-            public EndpointConfiguration Configuration => ((IEndpoint)_implementation).Configuration;
+            public EndpointConfiguration Configuration => Implementation.Configuration;
             public ValueTask HandleRequestAsync(HttpContext requestContext, CancellationToken cancellationToken)
             {
-                return ((IEndpoint)_implementation).HandleRequestAsync(requestContext, cancellationToken);
+                return Implementation.HandleRequestAsync(requestContext, cancellationToken);
             }
 
-            protected WithResponse()
+            private EndpointImplementation<NoRequest, TResponse> Initialize()
             {
                 EnsureCorrectOverrides(GetType(), IsHandleAsyncOverridden, IsGetResponseAsyncOverridden, out var useHandleAsyncInImplementation);
 
                 if (useHandleAsyncInImplementation)
                 {
-                    _implementation = new Implementation<NoRequest, TResponse>(
+                    return new EndpointImplementation<NoRequest, TResponse>(
                         Configure,
                         CallableHandleAsync);
                 }
                 else
                 {
-                    _implementation = new Implementation<NoRequest, TResponse>(
+                    return new EndpointImplementation<NoRequest, TResponse>(
                         Configure,
                         CallableGetResponseAsync);
                 }

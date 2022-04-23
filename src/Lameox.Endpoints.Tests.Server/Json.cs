@@ -33,8 +33,15 @@ namespace Lameox.Endpoints.Tests.Server
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public class EndpointImpl : Endpoint.WithRequest<Request>.WithResponse<string>
         {
+            private readonly ILogger _logger;
+            public EndpointImpl(ILogger<EndpointImpl> logger)
+            {
+                _logger = logger;
+            }
+
             protected override ValueTask<string> GetResponseAsync(Request request, CancellationToken cancellationToken)
             {
+                _logger.LogInformation("Endpoint called");
                 return ValueTask.FromResult(request.A + " " + request.B + ": " + request.C.Value);
             }
 

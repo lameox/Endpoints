@@ -26,19 +26,20 @@ namespace Lameox.Endpoints
                 return false;
             }
 
-            private readonly Implementation<TRequest, NoResponse> _implementation;
+            private EndpointImplementation<TRequest, NoResponse>? _implementation;
+            private EndpointImplementation<TRequest, NoResponse> Implementation => _implementation ??= Initialize();
 
-            public EndpointConfiguration Configuration => ((IEndpoint)_implementation).Configuration;
+            public EndpointConfiguration Configuration => Implementation.Configuration;
             public ValueTask HandleRequestAsync(HttpContext requestContext, CancellationToken cancellationToken)
             {
-                return ((IEndpoint)_implementation).HandleRequestAsync(requestContext, cancellationToken);
+                return Implementation.HandleRequestAsync(requestContext, cancellationToken);
             }
 
-            protected WithRequest()
+            private EndpointImplementation<TRequest, NoResponse> Initialize()
             {
                 EnsureCorrectOverrides(GetType(), IsHandleAsyncOverridden, IsGetResponseAsyncOverridden, out var useHandleAsyncInImplementation);
 
-                _implementation = new Implementation<TRequest, NoResponse>(
+                return new EndpointImplementation<TRequest, NoResponse>(
                     Configure,
                     CallableHandleAsync);
             }

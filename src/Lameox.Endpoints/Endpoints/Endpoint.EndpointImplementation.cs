@@ -10,7 +10,7 @@ namespace Lameox.Endpoints
 {
     public abstract partial class Endpoint
     {
-        private sealed class Implementation<TRequest, TResponse> : IEndpoint
+        private sealed class EndpointImplementation<TRequest, TResponse> : IEndpoint
             where TRequest : notnull, new()
             where TResponse : notnull
         {
@@ -22,7 +22,7 @@ namespace Lameox.Endpoints
 
             private EndpointConfiguration? _lazyConfiguration;
 
-            public Implementation(
+            public EndpointImplementation(
                 Func<EndpointConfiguration, EndpointConfiguration> configure,
                 Func<TRequest, CancellationToken, ValueTask> handleAsync)
             {
@@ -30,7 +30,7 @@ namespace Lameox.Endpoints
                 _configure = configure;
             }
 
-            public Implementation(
+            public EndpointImplementation(
                 Func<EndpointConfiguration, EndpointConfiguration> configure,
                 Func<TRequest, CancellationToken, ValueTask<TResponse>> getResponseAsync)
             {
