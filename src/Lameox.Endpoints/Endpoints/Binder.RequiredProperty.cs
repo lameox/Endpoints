@@ -37,7 +37,11 @@ namespace Lameox.Endpoints
             public PropertySetter PropertySetter => EnsureCreated(_propertySetter);
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private T EnsureCreated<T>(T value)
+            private
+#if !DEBUG
+            static
+#endif
+            T EnsureCreated<T>(T value)
             {
 #if DEBUG
                 if (!_isCreated)
@@ -55,7 +59,9 @@ namespace Lameox.Endpoints
                 _isRequired = isRequired;
                 _propertySetter = propertySetter;
 
+#if DEBUG
                 _isCreated = true;
+#endif
             }
         }
     }
