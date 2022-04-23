@@ -10,4 +10,8 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     </ItemGroup>
 
+    <PropertyGroup>
+        <PackageId>Lameox.Endpoints</PackageId>
+    </PropertyGroup>
+
 </Project>

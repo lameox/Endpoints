@@ -3,9 +3,9 @@
     <PropertyGroup>
         <TestedProjectName>$(MSBuildProjectName.Substring (0, $(MSBuildProjectName.LastIndexOf('.'))))</TestedProjectName>
     </PropertyGroup>
-    
-	<ItemGroup>
-		<ProjectReference Include="..\$(TestedProjectName)\$(TestedProjectName).csproj" />
-	</ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\$(TestedProjectName)\$(TestedProjectName).csproj" />
+    </ItemGroup>
 
 </Project>

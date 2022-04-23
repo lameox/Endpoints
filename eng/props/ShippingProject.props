@@ -1,31 +1,31 @@
 <Project>
-	<Import Project=".\Common.props" />
-	<Import Project=".\ShippingAssemblyInfos.props" />
-	
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-			<_Parameter1>$(AssemblyName).Tests</_Parameter1>
-		</AssemblyAttribute>
-        
+    <Import Project=".\Common.props" />
+    <Import Project=".\ShippingAssemblyInfos.props" />
+
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>$(AssemblyName).Tests</_Parameter1>
+        </AssemblyAttribute>
+
         <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
             <_Parameter1>$(AssemblyName).Benchmarks</_Parameter1>
         </AssemblyAttribute>
 
-		<!-- Moq proxy generator uses this assembly -->
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-			<_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
-		</AssemblyAttribute>		
-	</ItemGroup>
+        <!-- Moq proxy generator uses this assembly -->
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+            <_Parameter1>DynamicProxyGenAssembly2</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.3.3">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" Version="3.3.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-	<ItemGroup>
-		<AdditionalFiles Include="_api\BannedSymbols.txt" />
-		<AdditionalFiles Include="..\..\eng\BannedSymbols.GloballyBanned.txt" link="_api\BannedSymbols.GloballyBanned.txt" />
-	</ItemGroup>
+    <ItemGroup>
+        <AdditionalFiles Include="_api\BannedSymbols.txt" />
+        <AdditionalFiles Include="..\..\eng\BannedSymbols.GloballyBanned.txt" link="_api\BannedSymbols.GloballyBanned.txt" />
+    </ItemGroup>
 </Project>

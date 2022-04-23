@@ -1,8 +1,15 @@
 <Project>
-	<PropertyGroup>
+    <Import Project="..\..\Version.props" />
+    
+    <PropertyGroup>
 
-		<Version>0.1</Version>
-		<Copyright>© Lameox, $([System.DateTime]::UtcNow.Year) </Copyright>
-		
-	</PropertyGroup>
+        <Version>$(PackageVersion)</Version>
+        <AssemblyVersion>$(PackageVersion)</AssemblyVersion>
+        <FileVersion>$(PackageVersion)</FileVersion>
+        
+        <Copyright>© Lameox, $([System.DateTime]::UtcNow.Year) </Copyright>
+
+        <Authors>Lameox</Authors>
+
+    </PropertyGroup>
 </Project>
