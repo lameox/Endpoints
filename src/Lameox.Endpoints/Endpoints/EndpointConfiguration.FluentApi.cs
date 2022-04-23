@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -47,9 +48,47 @@ namespace Lameox.Endpoints
             return this;
         }
 
+        public EndpointConfiguration WithGet(bool requireAuthentication = true)
+        {
+            return WithVerb(HttpVerb.Get, requireAuthentication);
+        }
+
+        public EndpointConfiguration WithPost(bool requireAuthentication = true)
+        {
+            return WithVerb(HttpVerb.Post, requireAuthentication);
+        }
+
+        public EndpointConfiguration WithPut(bool requireAuthentication = true)
+        {
+            return WithVerb(HttpVerb.Put, requireAuthentication);
+        }
+
+        public EndpointConfiguration WithDelete(bool requireAuthentication = true)
+        {
+            return WithVerb(HttpVerb.Delete, requireAuthentication);
+        }
+
+        public EndpointConfiguration WithVerb(HttpVerb verb, bool requireAuthentication = true)
+        {
+            if (BitOperations.PopCount((uint)verb) != 1)
+            {
+                throw new ArgumentException("Only a single verb can be specified", nameof(verb));
+            }
+
+            return requireAuthentication ?
+                WithVerbs(AuthenticatedVerbs | verb) :
+                WithAnonymousVerbs(AnonymousVerbs | verb);
+        }
+
         public EndpointConfiguration WithVerbs(HttpVerb verbs)
         {
-            Verbs = verbs;
+            AuthenticatedVerbs = verbs;
+            return this;
+        }
+
+        public EndpointConfiguration WithAnonymousVerbs(HttpVerb verbs)
+        {
+            AnonymousVerbs = verbs;
             return this;
         }
 

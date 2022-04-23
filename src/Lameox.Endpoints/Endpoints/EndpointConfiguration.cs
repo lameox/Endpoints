@@ -12,7 +12,9 @@ namespace Lameox.Endpoints
     {
         internal int? Version { get; private set; }
         internal ImmutableArray<string> Routes { get; private set; }
-        internal HttpVerb Verbs { get; private set; }
+
+        internal HttpVerb AuthenticatedVerbs { get; private set; }
+        internal HttpVerb AnonymousVerbs { get; private set; }
 
         internal Action<IEndpointConventionBuilder>? CustomUserOptions { get; private set; }
     }

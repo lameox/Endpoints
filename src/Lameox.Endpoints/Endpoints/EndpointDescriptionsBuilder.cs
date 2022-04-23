@@ -106,8 +106,8 @@ namespace Lameox.Endpoints
             return EndpointDescription.Create(
                 endpointType,
                 route,
-                configuration.Verbs,
-                HttpVerb.None,
+                configuration.AnonymousVerbs,
+                configuration.AuthenticatedVerbs,
                 null,
                 ImmutableArray<string>.Empty,
                 configuration.CustomUserOptions);
