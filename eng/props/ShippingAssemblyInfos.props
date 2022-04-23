@@ -10,6 +10,7 @@
         <Copyright>© Lameox, $([System.DateTime]::UtcNow.Year) </Copyright>
 
         <Authors>Lameox</Authors>
-
+        
+        <RepositoryUrl>https://github.com/lameox/Endpoints.git</RepositoryUrl>
     </PropertyGroup>
 </Project>
