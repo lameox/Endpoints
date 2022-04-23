@@ -1,4 +1,4 @@
-name: Create Package For Tag
+name: Latest Package
 
 on:
   push:

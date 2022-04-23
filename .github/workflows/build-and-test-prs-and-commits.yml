@@ -1,4 +1,4 @@
-name: Build and Test PR's and Commits
+name: Latest Commit
 
 on:
   push:
