@@ -55,9 +55,9 @@ namespace Lameox.Endpoints
                 $"Ensure you have called {nameof(CorsMiddlewareExtensions.UseCors)}() before {nameof(StartupExtensions.UseSimpleEndpoints)}().");
         }
 
-        internal static Exception VerbsDefinedAsAnonymousAndAuthenticated(HttpVerb overlap)
+        internal static Exception VerbsDefinedAsAnonymousAndAuthenticated(HttpVerb invalidVerbs)
         {
-            return new InvalidOperationException($"The following Verbs are specified as both requireing authorization and anonymous: {overlap}.");
+            return new InvalidOperationException($"The following verbs are specified as both requiring authorization and anonymous: {invalidVerbs}.");
         }
     }
 }

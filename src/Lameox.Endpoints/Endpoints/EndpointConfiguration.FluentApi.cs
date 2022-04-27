@@ -82,10 +82,10 @@ namespace Lameox.Endpoints
 
         public EndpointConfiguration WithVerbs(HttpVerb verbs)
         {
-            var overlap = AnonymousVerbs & verbs;
-            if (overlap != HttpVerb.None)
+            var invalidVerbs = AnonymousVerbs & verbs;
+            if (invalidVerbs != HttpVerb.None)
             {
-                throw ExceptionUtilities.VerbsDefinedAsAnonymousAndAuthenticated(overlap);
+                throw ExceptionUtilities.VerbsDefinedAsAnonymousAndAuthenticated(invalidVerbs);
             }
 
             AuthenticatedVerbs = verbs;
@@ -94,10 +94,10 @@ namespace Lameox.Endpoints
 
         public EndpointConfiguration WithAnonymousVerbs(HttpVerb verbs)
         {
-            var overlap = AuthenticatedVerbs & verbs;
-            if (overlap != HttpVerb.None)
+            var invalidVerbs = AuthenticatedVerbs & verbs;
+            if (invalidVerbs != HttpVerb.None)
             {
-                throw ExceptionUtilities.VerbsDefinedAsAnonymousAndAuthenticated(overlap);
+                throw ExceptionUtilities.VerbsDefinedAsAnonymousAndAuthenticated(invalidVerbs);
             }
 
             AnonymousVerbs = verbs;
