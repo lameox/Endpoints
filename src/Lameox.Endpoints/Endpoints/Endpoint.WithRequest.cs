@@ -37,7 +37,7 @@ namespace Lameox.Endpoints
 
             private EndpointImplementation<TRequest, NoResponse> Initialize()
             {
-                EnsureCorrectOverrides(GetType(), IsHandleAsyncOverridden, IsGetResponseAsyncOverridden, out var useHandleAsyncInImplementation);
+                EnsureCorrectOverrides(GetType(), IsHandleAsyncOverridden, IsGetResponseAsyncOverridden, out var _);
 
                 return new EndpointImplementation<TRequest, NoResponse>(
                     Configure,
