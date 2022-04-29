@@ -68,7 +68,7 @@ namespace Lameox.Endpoints
             return WithVerb(HttpVerb.Delete, requireAuthentication);
         }
 
-        public EndpointConfiguration WithVerb(HttpVerb verb, bool requireAuthentication = true)
+        private EndpointConfiguration WithVerb(HttpVerb verb, bool requireAuthentication = true)
         {
             if (BitOperations.PopCount((uint)verb) != 1)
             {
