@@ -17,5 +17,14 @@ namespace Lameox.Endpoints
         internal HttpVerb AnonymousVerbs { get; private set; }
 
         internal Action<IEndpointConventionBuilder>? CustomUserOptions { get; private set; }
+
+        internal ImmutableArray<string> Policies { get; private set; }
+        internal ImmutableArray<string> Roles { get; private set; }
+        internal bool AllRolesRequired { get; private set; }
+        internal string? PermissionClaimType { get; private set; }
+        internal ImmutableArray<string> Permissions { get; private set; }
+        internal bool AllPermissionsRequired { get; private set; }
+        internal ImmutableArray<string> ClaimTypes { get; private set; }
+        internal bool AllClaimTypesRequired { get; private set; }
     }
 }

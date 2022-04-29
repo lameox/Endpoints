@@ -57,6 +57,22 @@ namespace Lameox.Endpoints
                     {
                         policy.RequireAuthenticatedUser();
 
+                        if (!endpoint.Roles.IsDefaultOrEmpty)
+                        {
+                            if (endpoint.AllRolesRequired)
+                            {
+                                policy.RequireAssertion(context =>
+                                    endpoint.Roles.All(role =>
+                                        context.User.IsInRole(role)));
+                            }
+                            else
+                            {
+                                policy.RequireAssertion(context =>
+                                    endpoint.Roles.Any(role =>
+                                        context.User.IsInRole(role)));
+                            }
+                        }
+
                         if (!endpoint.Permissions.IsDefaultOrEmpty)
                         {
                             if (string.IsNullOrEmpty(endpoint.PermissionClaimType))
@@ -171,9 +187,9 @@ namespace Lameox.Endpoints
         {
             var policies = new List<string>();
 
-            if (!endpointDescription.CustomPolicies.IsDefaultOrEmpty)
+            if (!endpointDescription.Policies.IsDefaultOrEmpty)
             {
-                policies.AddRange(endpointDescription.CustomPolicies);
+                policies.AddRange(endpointDescription.Policies);
             }
 
             if (!endpointDescription.Permissions.IsDefaultOrEmpty ||

@@ -109,5 +109,33 @@ namespace Lameox.Endpoints
             CustomUserOptions = builderOptions;
             return this;
         }
+
+        public EndpointConfiguration WithRequiredPolicies(IEnumerable<string> policies)
+        {
+            Policies = policies.ToImmutableArray();
+            return this;
+        }
+
+        public EndpointConfiguration WithRequiredPermissions(IEnumerable<string> permissions, string permissionClaimType, bool requireAll)
+        {
+            Permissions = permissions.ToImmutableArray();
+            PermissionClaimType = permissionClaimType;
+            AllPermissionsRequired = requireAll;
+            return this;
+        }
+
+        public EndpointConfiguration WithRequiredRoles(IEnumerable<string> roles, bool requireAll)
+        {
+            Roles = roles.ToImmutableArray();
+            AllRolesRequired = requireAll;
+            return this;
+        }
+
+        public EndpointConfiguration WithRequiredClaimTypes(IEnumerable<string> claimTypes, bool requireAll)
+        {
+            ClaimTypes = claimTypes.ToImmutableArray();
+            AllClaimTypesRequired = requireAll;
+            return this;
+        }
     }
 }

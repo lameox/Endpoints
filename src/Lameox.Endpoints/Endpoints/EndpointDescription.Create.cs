@@ -10,18 +10,30 @@ namespace Lameox.Endpoints
             string pattern,
             HttpVerb anonymousVerbs,
             HttpVerb authorizedVerbs,
+            Action<IEndpointConventionBuilder>? customUserOptions,
+            ImmutableArray<string> policies,
+            ImmutableArray<string> roles,
+            bool allRolesRequired,
             string? permissionClaimType,
-            ImmutableArray<string> customPolicies,
-            Action<IEndpointConventionBuilder>? customUserOptions)
+            ImmutableArray<string> permissions,
+            bool allPermissionsRequired,
+            ImmutableArray<string> claimTypes,
+            bool allClaimTypesRequired)
         {
             return new EndpointDescription(
                 endpointType,
                 pattern,
                 anonymousVerbs,
                 authorizedVerbs,
+                customUserOptions,
+                policies,
+                roles,
+                allRolesRequired,
                 permissionClaimType,
-                customPolicies,
-                customUserOptions);
+                permissions,
+                allPermissionsRequired,
+                claimTypes,
+                allClaimTypesRequired);
         }
     }
 }

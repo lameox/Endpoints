@@ -108,9 +108,16 @@ namespace Lameox.Endpoints
                 route,
                 configuration.AnonymousVerbs,
                 configuration.AuthenticatedVerbs,
-                null,
-                ImmutableArray<string>.Empty,
-                configuration.CustomUserOptions);
+                configuration.CustomUserOptions,
+                configuration.Policies,
+                configuration.Roles,
+                configuration.AllRolesRequired,
+                configuration.PermissionClaimType,
+                configuration.Permissions,
+                configuration.AllPermissionsRequired,
+                configuration.ClaimTypes,
+                configuration.AllClaimTypesRequired
+                );
         }
     }
 }

@@ -13,16 +13,20 @@ namespace Lameox.Endpoints
 
         public Action<IEndpointConventionBuilder>? CustomUserOptions { get; }
 
-        public string? PermissionClaimType { get; }
-        internal bool RequiresAuthorizationPipeline => AuthorizedVerbs != HttpVerb.None || !CustomPolicies.IsDefaultOrEmpty;
+        internal bool RequiresAuthorizationPipeline =>
+            AuthorizedVerbs != HttpVerb.None ||
+            !Policies.IsDefaultOrEmpty ||
+            !Roles.IsDefaultOrEmpty ||
+            !Permissions.IsDefaultOrEmpty ||
+            !ClaimTypes.IsDefaultOrEmpty;
 
-        public ImmutableArray<string> CustomPolicies { get; }
+        public ImmutableArray<string> Policies { get; }
         public ImmutableArray<string> AuthenticationSchemes { get; }
 
         public ImmutableArray<string> Roles { get; }
         public bool AllRolesRequired { get; }
-        public ImmutableArray<string> Policies { get; }
-        public bool AllPoliciesRequired { get; }
+
+        public string? PermissionClaimType { get; }
         public ImmutableArray<string> Permissions { get; }
         public bool AllPermissionsRequired { get; }
         public ImmutableArray<string> ClaimTypes { get; }
@@ -33,17 +37,29 @@ namespace Lameox.Endpoints
             string pattern,
             HttpVerb anonymousVerbs,
             HttpVerb authorizedVerbs,
-            string? permissionClaimType,
+            Action<IEndpointConventionBuilder>? customUserOptions,
             ImmutableArray<string> customPolicies,
-            Action<IEndpointConventionBuilder>? customUserOptions)
+            ImmutableArray<string> roles,
+            bool allRolesRequired,
+            string? permissionClaimType,
+            ImmutableArray<string> permissions,
+            bool allPermissionsRequired,
+            ImmutableArray<string> claimTypes,
+            bool allClaimTypesRequired)
         {
             EndpointType = endpointType;
             Pattern = pattern;
             AnonymousVerbs = anonymousVerbs;
             AuthorizedVerbs = authorizedVerbs;
             PermissionClaimType = permissionClaimType;
-            CustomPolicies = customPolicies;
+            Policies = customPolicies;
             CustomUserOptions = customUserOptions;
+            Roles = roles;
+            AllRolesRequired = allRolesRequired;
+            Permissions = permissions;
+            AllPermissionsRequired = allPermissionsRequired;
+            ClaimTypes = claimTypes;
+            AllClaimTypesRequired = allClaimTypesRequired;
         }
 
         private string? _cachedEndpointPolicyName;
