@@ -48,7 +48,7 @@ namespace Lameox.Endpoints.Tests.Server
             protected override EndpointConfiguration Configure(EndpointConfiguration configuration)
             {
                 return configuration
-                    .WithVerbs(HttpVerb.Post)
+                    .WithVerbs(HttpVerb.Post, EndpointAuthorization.None)
                     .WithRoutes("/json/{C}");
             }
         }

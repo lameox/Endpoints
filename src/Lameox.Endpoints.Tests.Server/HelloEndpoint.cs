@@ -6,7 +6,7 @@
         {
             return configuration
                 .WithRoutes("/")
-                .WithVerbs(HttpVerb.Get);
+                .WithVerbs(HttpVerb.Get, EndpointAuthorization.None);
         }
 
         protected override ValueTask<string> GetResponseAsync(CancellationToken cancellationToken)

@@ -43,7 +43,16 @@ namespace Lameox.Endpoints
 
             private EndpointConfiguration InitializeConfiguration()
             {
-                return _configure(new EndpointConfiguration());
+                var configuration = new EndpointConfiguration();
+                var result = _configure(configuration);
+
+                if (result != configuration)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                configuration.Freeze();
+                return configuration;
             }
 
             public async ValueTask HandleRequestAsync(HttpContext requestContext, CancellationToken cancellationToken)

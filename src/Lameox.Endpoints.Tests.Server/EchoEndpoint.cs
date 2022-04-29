@@ -6,7 +6,7 @@
         {
             return configuration
                 .WithRoutes("/echo")
-                .WithVerbs(HttpVerb.Post);
+                .WithVerbs(HttpVerb.Post, EndpointAuthorization.None);
         }
 
         protected override ValueTask<string> GetResponseAsync(string request, CancellationToken cancellationToken)
